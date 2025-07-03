@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout
-from .forms import RegisterForm
+from .forms import RegisterForm, CustomLoginForm
 
 # Create your views here.
 
@@ -25,5 +25,6 @@ class UserLogoutView(LogoutView):
     next_page = reverse_lazy('index')
 
 class UserLoginView(LoginView):
+    form_class = CustomLoginForm
     template_name = 'pages/login.html'
     next_page = reverse_lazy('index')

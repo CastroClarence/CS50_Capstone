@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 {% block body %}
-<div class="w-full h-full flex justify-center">
-    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 gap-2">
+<div class="w-full h-full flex justify-center items-center">
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 ">
           <legend class="fieldset-legend text-xl">Register</legend>
-        <form action="{% url 'register' %}" method="post">
+        <form action="{% url 'register' %}" method="post" class="flex flex-col gap-2">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Register</button>
+            {% for field in form %}
+            {{ field.label }}
+            {{ field }}
+            {% if form.is_bound %}
+                {% for error in field.errors %}
+                <p class="text-xs text-red-500">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary mt-2" >Register</button>
         </form>
     </fieldset>
 </div>

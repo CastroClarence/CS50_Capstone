@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
-<form action="{% url 'login' %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+<div class="h-full w-full flex justify-center items-center">
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 gap-2">
+        <legend class="fieldset-legend text-xl">Login</legend>
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+            No account yet? Register <a href="{% url 'register' %}" class="underline hover:text-blue-500">here.</a>
+        </form>
+    </fieldset>
+</div>
 {% endblock %}
