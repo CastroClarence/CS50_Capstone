@@ -43,7 +43,7 @@
             </ul>
             </details>
         </li>
-        <li><a>Services</a></li>
+        <li><a href="{% url 'service' %}">Services</a></li>
         </ul>
     </div>
     <div class="navbar-end">
@@ -57,9 +57,14 @@
         {% endif %}
     </div>
     </div>
-    <div class="pt-20 min-w-full h-screen">
-        {% block body %}
-        {% endblock %}
+    <div class="px-4">
+        <div class="pt-20 min-w-full h-screen">
+            {% block body %}
+            {% endblock %}
+        </div>
     </div>
+
+    {% block script %}
+    {% endblock %}
 </body>
 </html>

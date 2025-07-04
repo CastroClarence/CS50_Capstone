@@ -1,6 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
+from django import forms
+from .models import Service
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -33,4 +35,25 @@ class CustomLoginForm(AuthenticationForm):
         })
         self.fields['password'].widget.attrs.update({
             'class': 'input'
+        })
+
+class ServiceCreateForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'category', 'description', 'image']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['name'].widget.attrs.update({
+            'class' : 'input'
+        })
+        self.fields['category'].widget.attrs.update({
+            'class' : 'input'
+        })
+        self.fields['image'].widget.attrs.update({
+            'class' : 'file-input'
+        })
+        self.fields['description'].widget.attrs.update({
+            'class': 'textarea'
         })

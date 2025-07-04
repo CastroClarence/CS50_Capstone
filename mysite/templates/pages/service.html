@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="flex flex-col w-full h-full justify-between items-center">
+    <div class="flex w-full p-4 justify-end">
+        <!-- Action Container -->
+        <div>
+            <button class="btn" onclick="service_modal.showModal()">
+                Create Service
+            </button>
+            <button class="btn" onclick="service_list_modal.showModal()">
+                Edit Services
+            </button>
+        </div>
+    </div>
+    {% if messages %}
+        {% for message in messages %}
+        <div role="alert" class="alert alert-{{ message.tags }} alert-soft">
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="flex h-full w-full">
+    {% for service in object_list %}
+        <!-- Container of Service List -->
+    
+    <div class="card bg-base-100 w-96 h-96 shadow-sm">
+        <figure>
+            <img
+            class="h-full"
+            src="{{ service.image.url }}"
+            alt="{{ service.name }}" />
+        </figure>
+        <div class="card-body">
+            <h2 class="card-title">
+            {{ service.name }}
+            <div class="badge badge-secondary">NEW</div>
+            </h2>
+            <p>{{ service.description }}</p>
+            <div class="card-actions justify-end">
+            <div class="badge badge-outline">{{ service.category }}</div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p>No services provided yet. </p>
+    {% endfor %}
+    </div>
+</div>
+
+<!-- Modals -->
+<dialog id="service_modal" class="modal">
+  <div class="modal-box flex justify-center">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 h-3/4">
+        <legend class="fieldset-legend text-xl">Service</legend>
+            <form action="{% url 'service_create' %}" method="post" id="service_form" class="flex flex-col gap-2" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ service_form.as_p }}
+                <div class="hidden" id="preview_container">
+                    <img src="" id="image_preview" alt="image preview">
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+        </div>
+    </fieldset>
+</dialog>
+
+<dialog id="service_list_modal" class="modal">
+    <!-- List Modal -->
+  <div class="modal-box flex justify-center items-center">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeForm()">✕</button>
+    </form>
+    <!-- List of Services -->
+    <ul class="list bg-base-100 rounded-box shadow-md">
+    
+        <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">List of Services</li>
+
+        {% for service in object_list %}
+        <li class="list-row flex">
+            <div class="flex-1">
+                <div>{{ service.name }}</div>
+                <div class="text-xs uppercase font-semibold opacity-60">{{ service.category }}</div>
+            </div>
+            <div class="flex-1 flex gap-2">
+                <button class="btn" 
+                    onclick="service_modal.showModal(); updateForm(
+                        this,
+                        '{{ service.id|escapejs }}',
+                        '{{ service.name|escapejs }}',
+                        '{{ service.description|escapejs }}',
+                        '{{ service.image.url }}',
+                        '{{ service.category|escapejs }}'
+                    );"
+                    data-update-url="{% url 'service_update' service.id %}">
+                    Edit
+                </button>
+                <form action="{% url 'service_delete' service.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete {{ service.name }}?')">
+                    {% csrf_token %}
+                    <button class="btn" type="submit">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    
+    </ul>
+</dialog>
+{% endblock %}
+
+{% block script %}
+<script>
+    setTimeout(() => {
+        // Removes all alert in 3sec
+        document.querySelector('.alert').remove()
+    }, 3000)
+
+    function updateForm(button, id, name, description, image, category){
+        name_input = document.querySelector('#id_name');
+        description_input = document.querySelector('#id_description');
+        image_input = document.querySelector('#id_image');
+        category_input = document.querySelector('#id_category');
+        form = document.querySelector('#service_form');
+        preview_container = document.querySelector('#preview_container')
+        const update_url = button.dataset.updateUrl;
+
+        name_input.value = `${name}`;
+        description_input.value = description;
+        image_input.src = '';
+        category_input.value = category;
+        document.getElementById('image_preview').src = image;
+        preview_container.className.remove;
+        preview_container.className = 'block'
+
+        form.action = update_url;
+    }
+
+    function closeForm(){
+        name_input = document.querySelector('#id_name');
+        description_input = document.querySelector('#id_description');
+        image_input = document.querySelector('#id_image');
+        category_input = document.querySelector('#id_category');
+        form = document.querySelector('#service_form');
+        update_url = '{% url "service_create" %}';
+        preview_container = document.querySelector('#preview_container')
+
+        name_input.value = '';
+        description_input.value = '';
+        image_input.src = '';
+        category_input.value = '';
+        document.getElementById('image_preview').src = '';
+        preview_container.className.remove;
+        preview_container.className = 'hidden'
+
+        form.action = update_url;
+    }
+</script>
+{% endblock %}
