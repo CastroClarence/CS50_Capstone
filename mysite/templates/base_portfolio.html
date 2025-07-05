@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dancinganimal">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servfolio</title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="navbar bg-base-100 shadow-sm fixed">
+    <div class="navbar-start">
+        <div class="dropdown">
+        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+        </div>
+        <ul
+            tabindex="0"
+            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            <li><a>Item 1</a></li>
+            <li>
+            <a>Parent</a>
+            <ul class="p-2">
+                <li><a>Submenu 1</a></li>
+                <li><a>Submenu 2</a></li>
+            </ul>
+            </li>
+            <li><a>Item 3</a></li>
+        </ul>
+        </div>
+        <a class="btn btn-ghost text-xl" href="{% url 'index' %}">Servfolio</a>
+    </div>
+    <div class="navbar-center hidden lg:flex">
+        <!-- Desktop -->
+        <ul class="menu menu-horizontal px-1">
+        <li><a href="{% url 'portfolio' request.user.username %}">Home</a></li>
+        <!-- <li>
+            <details>
+            <summary>About Us</summary>
+            <ul class="p-2">
+                <li><a>Submenu 1</a></li>
+                <li><a>Submenu 2</a></li>
+            </ul>
+            </details>
+        </li> -->
+        <li><a href=""">Projects</a></li>
+        <li><a href="">Socials</a></li>
+        </ul>
+    </div>
+    <div class="navbar-end">
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button class="btn" type="submit">Logout</button>
+        </form>
+        {% else %}
+        <a class="btn" href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
+    </div>
+    <div class="px-4">
+        <div class="pt-20 min-w-full h-screen">
+            {% block body %}
+            {% endblock %}
+        </div>
+    </div>
+
+    {% block script %}
+    {% endblock %}
+</body>
+</html>

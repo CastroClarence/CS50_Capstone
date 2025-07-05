@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout
-from .forms import RegisterForm, CustomLoginForm, ServiceCreateForm
-from .models import Service
+from .forms import RegisterForm, CustomLoginForm, ServiceCreateForm, PortfolioForm
+from .models import Service, Portfolio, Social
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -86,4 +87,27 @@ class ServiceDeleteView(DeleteView):
         messages.add_message(self.request, messages.SUCCESS, 'Service deleted successfully.')
         return super().form_valid(form)
     
+class PortfolioView(DetailView):
+    template_name = 'portfolio/portfolio.html'
+    model = Portfolio
+    
+    def get_object(self):
+        username = self.kwargs['username']
+        user = get_object_or_404(User, username = username)
+        return get_object_or_404(Portfolio, user = user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['portfolio_form'] = PortfolioForm
+        return context
+    
+class PortfolioUpdateView(UpdateView):
+    model = Portfolio
+    form_class = PortfolioForm
+
+    def get_success_url(self):
+        username = self.request.user.username
+        return reverse_lazy('portfolio', kwargs={
+            'username': username
+        })
     

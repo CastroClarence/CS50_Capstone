@@ -28,7 +28,7 @@
             <li><a>Item 3</a></li>
         </ul>
         </div>
-        <a class="btn btn-ghost text-xl">Servfolio</a>
+        <a class="btn btn-ghost text-xl" href="{% url 'index' %}">Servfolio</a>
     </div>
     <div class="navbar-center hidden lg:flex">
         <!-- Desktop -->
@@ -44,6 +44,7 @@
             </details>
         </li>
         <li><a href="{% url 'service' %}">Services</a></li>
+        <li><a href="{% url 'portfolio' request.user.username %}">Portfolio</a></li>
         </ul>
     </div>
     <div class="navbar-end">

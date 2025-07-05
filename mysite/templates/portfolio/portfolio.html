@@ -1,0 +1,58 @@
+{% extends "base_portfolio.html" %}
+{% block body %}
+<div class="hero bg-base-200 min-h-full min-w-full relative">
+    <div class="absolute top-5 left-5 z-10">
+        <button class="btn-xs btn btn-secondary" onclick="portfolio_modal.showModal(); editForm('{{ object.profile_picture.url }}', '{{ object.description }}')">
+            Edit Details
+        </button>
+    </div>
+  <div class="hero-content min-w-full  flex-row justify-between lg:flex-row-reverse">
+    <img
+      src="{{ object.profile_picture.url }}"
+      class="max-w-sm rounded-lg shadow-2xl"
+    />
+    <div>
+      <h1 class="text-5xl font-bold">Hi, I am {{ object.user.first_name }}</h1>
+      <p class="py-6">
+        {{ object.description }}
+      </p>
+      <button class="btn btn-primary">View Projects</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+ <dialog id="portfolio_modal" class="modal">
+  <div class="modal-box flex justify-center">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 h-3/4">
+        <legend class="fieldset-legend text-xl">Service</legend>
+            <form action="{% url 'portfolio_update' object.id %}" method="post" id="service_form" class="flex flex-col gap-2" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ portfolio_form.as_p }}
+                <div class="hidden" id="preview_container">
+                    <p>Image Preview:</p>
+                    <img src="" id="image_preview" alt="image preview">
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+        </div>
+    </fieldset>
+</dialog>
+{% endblock %}
+
+{% block script %}
+<script>
+    function editForm(image, description){
+        const image_preview = document.querySelector('#preview_container')
+        const description_input = document.querySelector('#id_description')
+        
+        image_preview.className.remove;
+        image_preview.className = 'block'
+        image_preview.querySelector('#image_preview').src = image
+        description_input.value = description
+    }
+</script>
+{% endblock %}
