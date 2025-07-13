@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout
-from .forms import RegisterForm, CustomLoginForm, ServiceCreateForm, PortfolioForm
-from .models import Service, Portfolio, Social
+from .forms import RegisterForm, CustomLoginForm, ServiceCreateForm, PortfolioForm, ProjectForm
+from .models import Service, Portfolio, Social, Project
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -108,6 +108,60 @@ class PortfolioUpdateView(UpdateView):
     def get_success_url(self):
         username = self.request.user.username
         return reverse_lazy('portfolio', kwargs={
+            'username': username
+        })
+    
+class ProjectListView(ListView):
+    model = Project
+    template_name = 'portfolio/project.html'
+
+    def get_queryset(self):
+        self.owner = get_object_or_404(User, username=self.kwargs['username'])
+        return Project.objects.filter(user = self.owner)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['project_form'] = ProjectForm
+        context['owner'] = self.owner
+        context['is_owner'] = self.request.user == self.owner
+        return context
+
+class ProjectCreateView(CreateView):
+    model = Project
+    form_class = ProjectForm
+    
+    def get_success_url(self):
+        username = self.request.user.username
+        return reverse_lazy('project', kwargs={
+            'username' : username
+        })
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+    
+class ProjectUpdateView(UpdateView):
+    model = Project
+    form_class = ProjectForm
+
+    def get_success_url(self):
+        username = self.request.user.username
+        return reverse_lazy('project', kwargs={
+            'username' : username
+        })
+    
+class ProjectDeleteView(DeleteView):
+    model = Project
+    success_url = reverse_lazy('service')
+
+    def form_valid(self, form):
+        form
+        return super().form_valid(form)
+    
+
+    def get_success_url(self):
+        username = self.request.user.username
+        return reverse_lazy('project', kwargs={
             'username': username
         })
     

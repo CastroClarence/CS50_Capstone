@@ -20,6 +20,13 @@ class Service(models.Model):
     def __str__(self):
         return f'{self.name}'
     
+class Project(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='projects')
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    image = models.ImageField(upload_to='project/', blank=True)
+    
 class Portfolio(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='portfolio')
     profile_picture = models.ImageField(upload_to='portfolio/', blank=True)

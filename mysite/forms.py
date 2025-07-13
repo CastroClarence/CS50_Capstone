@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from .models import Service, Portfolio
+from .models import Service, Portfolio, Project
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -70,4 +70,24 @@ class PortfolioForm(forms.ModelForm):
         })
         self.fields['description'].widget.attrs.update({
             'class' : 'textarea'
+        })
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ['name', 'description', 'service', 'image']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({
+            'class': 'input'
+        })
+        self.fields['description'].widget.attrs.update({
+            'class': 'textarea'
+        })
+        self.fields['service'].widget.attrs.update({
+            'class': 'input'
+        })
+        self.fields['image'].widget.attrs.update({
+            'class': 'file-input'
         })
