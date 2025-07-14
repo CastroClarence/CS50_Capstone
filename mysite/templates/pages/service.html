@@ -4,11 +4,8 @@
     <div class="flex w-full p-4 justify-end">
         <!-- Action Container -->
         <div>
-            <button class="btn" onclick="service_modal.showModal()">
+            <button class="btn btn-xs" onclick="service_modal.showModal()">
                 Create Service
-            </button>
-            <button class="btn" onclick="service_list_modal.showModal()">
-                Edit Services
             </button>
         </div>
     </div>
@@ -26,6 +23,38 @@
     
     <div class="card bg-base-100 w-96 h-96 shadow-sm">
         <figure>
+            {% if request.user == service.user %}
+            <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer">
+                <div tabindex="0" role="button" class="cursor-pointer">...</div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
+                    <li>
+                        <button 
+                            onclick="service_modal.showModal(); updateForm(
+                                this,
+                                '{{ service.id|escapejs }}',
+                                '{{ service.name|escapejs }}',
+                                '{{ service.description|escapejs }}',
+                                '{{ service.image.url }}',
+                                '{{ service.category|escapejs }}'
+                            );"
+                            data-update-url="{% url 'service_update' service.id %}">
+                            Edit
+                        </button>
+                    </li>
+                    <li>
+                        <button form="delete-form-{{ project.id }}" type="submit">
+                            Delete
+                        </button>
+                    </li>
+                    <form id="delete-form-{{ project.id }}"
+                    action="{% url 'service_delete' service.id %}"
+                    method="post" class="hidden"
+                    onsubmit="return confirm('Are you sure you want to delete service {{ service.name }}?')">
+                        {% csrf_token %}
+                    </form>
+                </ul>
+            </div>
+            {% endif %}
             <img
             class="h-full"
             src="{{ service.image.url }}"
@@ -66,49 +95,6 @@
             </form>
         </div>
     </fieldset>
-</dialog>
-
-<dialog id="service_list_modal" class="modal">
-    <!-- List Modal -->
-  <div class="modal-box flex justify-center items-center">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeForm()">✕</button>
-    </form>
-    <!-- List of Services -->
-    <ul class="list bg-base-100 rounded-box shadow-md">
-    
-        <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">List of Services</li>
-
-        {% for service in object_list %}
-        <li class="list-row flex">
-            <div class="flex-1">
-                <div>{{ service.name }}</div>
-                <div class="text-xs uppercase font-semibold opacity-60">{{ service.category }}</div>
-            </div>
-            <div class="flex-1 flex gap-2">
-                <button class="btn" 
-                    onclick="service_modal.showModal(); updateForm(
-                        this,
-                        '{{ service.id|escapejs }}',
-                        '{{ service.name|escapejs }}',
-                        '{{ service.description|escapejs }}',
-                        '{{ service.image.url }}',
-                        '{{ service.category|escapejs }}'
-                    );"
-                    data-update-url="{% url 'service_update' service.id %}">
-                    Edit
-                </button>
-                <form action="{% url 'service_delete' service.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete {{ service.name }}?')">
-                    {% csrf_token %}
-                    <button class="btn" type="submit">
-                        Delete
-                    </button>
-                </form>
-            </div>
-        </li>
-        {% endfor %}
-    
-    </ul>
 </dialog>
 {% endblock %}
 
