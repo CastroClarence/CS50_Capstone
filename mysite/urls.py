@@ -15,8 +15,8 @@ urlpatterns = [
     path('servfolio/<str:username>/index/', PortfolioView.as_view(), name='portfolio'),
     path('servfolio/<str:username>/projects/', ProjectListView.as_view(), name='project' ),
     path('servfolio/projects/create/', ProjectCreateView.as_view(), name='project_create' ),
-    path('servfolio/projects/<int:pk>/update/', ProjectUpdateView.as_view(), name='project_update'),
-    path('servfolio/projects/<int:pk>/delete/', ProjectDeleteView.as_view(), name='project_delete'),
+    path('servfolio/projects/update/<int:pk>/', ProjectUpdateView.as_view(), name='project_update'),
+    path('servfolio/projects/delete/<int:pk>/', ProjectDeleteView.as_view(), name='project_delete'),
     path('servfolio/<int:pk>/update/', PortfolioUpdateView.as_view(), name='portfolio_update'),
 
 

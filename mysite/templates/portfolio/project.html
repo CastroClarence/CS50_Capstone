@@ -1,6 +1,6 @@
 {% extends "base_portfolio.html" %}
 {% block body %}
-<div class="flex flex-col">
+<div class="flex flex-col gap-4">
     {% if is_owner %}
     <div class="flex justify-end">
         <div class="flex gap-2">
@@ -10,13 +10,16 @@
         </div>
     </div>
     {% endif %}
+    <div>
+        <p class="text-5xl font-bold">Projects</p>
+    </div>
     <div class="flex gap-2">
         {% for project in object_list %}
         <!-- Cards of the Projects -->
-        <div class="card bg-base-100 w-96 h-96 shadow-sm">
+        <div class="card bg-base-100 w-96 h-96 shadow-sm border-1 border-primary-content">
             <figure class="flex-2">
                 {% if is_owner %}
-                <div class="dropdown dropdown-bottom dropdown-end top-0.5 right-0.5 absolute flex-1 cursor-pointer">
+                <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer">
                     <div tabindex="0" role="button" class="cursor-pointer">...</div>
                     <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
                         <li><button 
@@ -24,11 +27,14 @@
                             id="project-btn"
                             onclick="editForm('{{project.id}}', '{{project.name}}', '{{project.description}}', '{{project.image.url}}', '{{project.service.id}}'); project_modal.showModal();">Edit</button></li>
                         <li>
-                            <form action="{% url 'project_delete' project.id %}" onsubmit="return confirm('Are you sure you want to delete {{ project.name }}?')">
-                                {% csrf_token %}
-                                <button type="submit">Delete</button>
-                            </form>
+                            <button form="delete-form-{{ project.id }}" type="submit">
+                                Delete
+                            </button>
                         </li>
+                        <form id="delete-form-{{ project.id }}" action="{% url 'project_delete' project.id %}" method="post" class="hidden"
+                        onsubmit="return confirm('Are you sure you want to delete project {{ project.name }}?')">
+                            {% csrf_token %}
+                        </form>
                     </ul>
                 </div>
                 {% endif %}
@@ -46,7 +52,7 @@
                 {{ project.name }}
                 <div class="badge badge-secondary">NEW</div>
                 </h2>
-                <p>{{ project.description }}</p>
+                <p class="break-words">{{ project.description }}</p>
                 <div class="card-actions justify-end">
                 <div class="badge badge-outline">{{ project.service.category }}</div>
                 </div>
