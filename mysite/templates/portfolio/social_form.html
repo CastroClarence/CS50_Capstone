@@ -1,0 +1,7 @@
+{% block body %}
+<form action="{% url 'social_create' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}

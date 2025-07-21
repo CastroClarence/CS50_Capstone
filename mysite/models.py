@@ -33,6 +33,13 @@ class Portfolio(models.Model):
     description = models.TextField()
 
 class Social(models.Model):
+    choices = {
+        'Facebook': 'Facebook',
+        'LinkedIn': 'LinkedIn',
+        'Instagram': 'Instagram',
+        'Github': 'Github',
+        'X': 'X'
+    }
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='socials')
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, choices=choices )
     url = models.URLField()

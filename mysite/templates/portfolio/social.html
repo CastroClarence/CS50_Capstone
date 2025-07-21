@@ -1,0 +1,47 @@
+{% extends 'base_portfolio.html' %}
+{% load static %}
+{% block body %}
+<div class="h-full w-full flex justify-center items-center flex-col gap-4">
+    <p class="text-5xl font-bold">
+        Contact Me
+    </p>
+    <div class="flex gap-2">
+    {% for social in object_list %}
+    <div>
+        <!-- TODO can't fix color -->
+        <div class="relative">
+            {% if request.user == social.user %}
+            <div class="dropdown dropdown-bottom dropdown-end absolute top-2 right-0 dropdown-hover">
+                <div tabindex="0" role="button">
+                    <i class="fi fi-br-menu-dots-vertical text-neutral-content text-xs flex justify-center items-center hover:text-primary"></i>
+                </div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                    <li><a>Edit</a></li>
+                    <li><a>Delete</a></li>
+                </ul>
+            </div>
+            {% endif %}
+            <a href="{{social.url}}" class="cursor-pointer flex justify-center items-center gap-2 border-neutral px-5 py-4 border-1 rounded-lg  w-fit text-xl bg-neutral">
+                {% if social.name == 'Facebook' %}
+                <i class="fi fi-brands-facebook flex justify-center items-center text-neutral-content"></i>
+                {% elif  social.name == 'Instagram' %}
+                <i class="fi fi-brands-instagram flex justify-center items-center text-neutral-content"></i>
+                {% elif  social.name == 'Github' %}
+                <i class="fi fi-brands-github flex justify-center items-center text-neutral-content"></i>
+                {% elif  social.name == 'X' %}
+                <i class="fi fi-brands-twitter-alt justify-center items-center text-neutral-content"></i>
+                {% elif  social.name == 'LinkedIn' %}
+                <i class="fi fi-brands-linkedin flex justify-center items-center text-neutral-content"></i>
+                {% else %}
+                <i class="fi fi-rr-globe flex justify-center items-center text-neutral-content"></i>
+                {% endif %}
+                <p class="text-neutral-content">
+                    {{ social.name }}
+                </p>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

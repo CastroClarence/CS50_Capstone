@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from .models import Service, Portfolio, Project
+from .models import Service, Portfolio, Project, Social
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -91,3 +91,8 @@ class ProjectForm(forms.ModelForm):
         self.fields['image'].widget.attrs.update({
             'class': 'file-input'
         })
+
+class SocialForm(forms.ModelForm):
+    class Meta:
+        model = Social
+        fields = ['name', 'url']

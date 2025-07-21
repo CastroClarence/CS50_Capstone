@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView, DetailView
+from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView, DetailView, FormView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout
-from .forms import RegisterForm, CustomLoginForm, ServiceCreateForm, PortfolioForm, ProjectForm
+from .forms import RegisterForm, CustomLoginForm, ServiceCreateForm, PortfolioForm, ProjectForm, SocialForm
 from .models import Service, Portfolio, Social, Project
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -93,11 +93,12 @@ class PortfolioView(DetailView):
     
     def get_object(self):
         username = self.kwargs['username']
-        user = get_object_or_404(User, username = username)
-        return get_object_or_404(Portfolio, user = user)
+        self.user = get_object_or_404(User, username = username)
+        return get_object_or_404(Portfolio, user = self.user)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['owner'] = self.user
         context['portfolio_form'] = PortfolioForm
         return context
     
@@ -159,3 +160,43 @@ class ProjectDeleteView(DeleteView):
             'username': username
         })
     
+class SocialFormView(FormView):
+    template_name = 'portfolio/social_form.html'
+    form_class = SocialForm
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'portfolio', kwargs={
+                'username' : self.request.user.username
+            })
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+    
+class SocialCreateView(CreateView):
+    form_class = SocialForm
+    model = Social
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'portfolio', kwargs={
+                'username' : self.request.user.username
+            })
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+    
+class SocialListView(ListView):
+    model = Social
+    template_name = 'portfolio/social.html'
+
+    def get_queryset(self):
+        self.owner = get_object_or_404(User, username=self.kwargs['username']) 
+        return Social.objects.filter(user=self.owner)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['owner'] = self.owner
+        return context

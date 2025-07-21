@@ -21,7 +21,7 @@
     {% for service in object_list %}
         <!-- Container of Service List -->
     
-    <div class="card bg-base-100 w-96 h-96 shadow-sm">
+    <div class="card bg-base-100 w-96 h-96 shadow-sm border-1 border-primary-content">
         <figure>
             {% if request.user == service.user %}
             <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer">
@@ -56,7 +56,7 @@
             </div>
             {% endif %}
             <img
-            class="h-full"
+            class="h-full p-2"
             src="{{ service.image.url }}"
             alt="{{ service.name }}" />
         </figure>
@@ -65,6 +65,7 @@
             {{ service.name }}
             <div class="badge badge-secondary">NEW</div>
             </h2>
+            <p class="text-xs">by: <a class="underline hover:text-blue-500" href="{% url 'portfolio' service.user.username %}"> {{ service.user.username }} </a></p>
             <p>{{ service.description }}</p>
             <div class="card-actions justify-end">
             <div class="badge badge-outline">{{ service.category }}</div>

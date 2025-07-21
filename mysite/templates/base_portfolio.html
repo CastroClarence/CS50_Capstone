@@ -1,11 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-theme="dancinganimal">
+<html lang="en" data-theme="corporate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servfolio</title>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-brands/css/uicons-brands.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
 </head>
 <body>
     <div class="navbar bg-base-100 shadow-sm fixed">
@@ -33,7 +35,7 @@
     <div class="navbar-center hidden lg:flex">
         <!-- Desktop -->
         <ul class="menu menu-horizontal px-1">
-        <li><a href="{% url 'portfolio' request.user.username %}">Home</a></li>
+        <li><a href="{% url 'portfolio' owner.username %}">Home</a></li>
         <!-- <li>
             <details>
             <summary>About Us</summary>
@@ -43,8 +45,16 @@
             </ul>
             </details>
         </li> -->
-        <li><a href="{% url 'project' request.user.username %}">Projects</a></li>
-        <li><a href="">Socials</a></li>
+        <li><a href="{% url 'project' owner.username %}">Projects</a></li>
+        {% if request.user == owner %}
+            {% if owner.object.socials %}
+            <li><a href="{% url 'social_form' %}">Socials</a></li>
+            {% else %}
+            <li><a href="{% url 'social' owner.username %}">Socials</a></li>
+            {% endif %}
+        {% else %}
+        <li><a href="{% url 'social' owner.username %}">Socials</a></li>
+        {% endif %}
         </ul>
     </div>
     <div class="navbar-end">

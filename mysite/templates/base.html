@@ -33,18 +33,20 @@
     <div class="navbar-center hidden lg:flex">
         <!-- Desktop -->
         <ul class="menu menu-horizontal px-1">
-        <li><a>Home</a></li>
+        <li><a href="{% url 'index' %}">Home</a></li>
         <li>
             <details>
             <summary>About Us</summary>
             <ul class="p-2">
-                <li><a>Submenu 1</a></li>
-                <li><a>Submenu 2</a></li>
+                <li><a>Mission</a></li>
+                <li><a>Developer</a></li>
             </ul>
             </details>
         </li>
         <li><a href="{% url 'service' %}">Services</a></li>
+        {% if request.user.is_authenticated %}
         <li><a href="{% url 'portfolio' request.user.username %}">Portfolio</a></li>
+        {% endif %}
         </ul>
     </div>
     <div class="navbar-end">
