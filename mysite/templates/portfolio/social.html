@@ -1,47 +1,111 @@
 {% extends 'base_portfolio.html' %}
 {% load static %}
 {% block body %}
-<div class="h-full w-full flex justify-center items-center flex-col gap-4">
-    <p class="text-5xl font-bold">
-        Contact Me
-    </p>
-    <div class="flex gap-2">
-    {% for social in object_list %}
-    <div>
-        <!-- TODO can't fix color -->
-        <div class="relative">
-            {% if request.user == social.user %}
-            <div class="dropdown dropdown-bottom dropdown-end absolute top-2 right-0 dropdown-hover">
-                <div tabindex="0" role="button">
-                    <i class="fi fi-br-menu-dots-vertical text-neutral-content text-xs flex justify-center items-center hover:text-primary"></i>
+<div class="w-full h-full flex flex-col gap-4 relative">
+    {% if messages %}
+    <div class="space-y-2 my-4">
+        {% for message in messages %}
+        <div class="p-2 border rounded {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="flex w-full p-4 justify-end">
+        <button class="btn btn-xs" onclick="create_form_container.showModal()">
+            Add Social
+        </button>
+    </div>
+
+    <div class="flex-grow flex flex-col items-center justify-center gap-4">
+        <p class="text-5xl font-bold">Contact Me</p>
+        <div class="flex gap-2 flex-wrap justify-center">
+            {% for social in object_list %}
+            <div class="relative">
+                {% if request.user == social.user %}
+                <div class="dropdown dropdown-bottom dropdown-end absolute top-2 right-0 dropdown-hover z-10">
+                    <div tabindex="0" role="button">
+                        <i class="fi fi-br-menu-dots-vertical text-neutral-content text-xs hover:text-primary"></i>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow-sm">
+                        <li>
+                            <a onclick="form_container.showModal(); editForm('{{social.name}}', '{{social.url}}')" data-url="{% url 'social_update' social.id %}" id="editButton">Edit</a>
+                        </li>
+                        <li>
+                            <button type="submit" form="social_delete_{{social.id}}">Delete</button>
+                        </li>
+                    </ul>
+                    <form method="post" action="{% url 'social_delete' social.id %}" class="hidden" id="social_delete_{{social.id}}" onsubmit="return confirm('Are you sure you want to delete {{social.name}}')">
+                        {% csrf_token %}
+                    </form>
                 </div>
-                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                    <li><a>Edit</a></li>
-                    <li><a>Delete</a></li>
-                </ul>
-            </div>
-            {% endif %}
-            <a href="{{social.url}}" class="cursor-pointer flex justify-center items-center gap-2 border-neutral px-5 py-4 border-1 rounded-lg  w-fit text-xl bg-neutral">
-                {% if social.name == 'Facebook' %}
-                <i class="fi fi-brands-facebook flex justify-center items-center text-neutral-content"></i>
-                {% elif  social.name == 'Instagram' %}
-                <i class="fi fi-brands-instagram flex justify-center items-center text-neutral-content"></i>
-                {% elif  social.name == 'Github' %}
-                <i class="fi fi-brands-github flex justify-center items-center text-neutral-content"></i>
-                {% elif  social.name == 'X' %}
-                <i class="fi fi-brands-twitter-alt justify-center items-center text-neutral-content"></i>
-                {% elif  social.name == 'LinkedIn' %}
-                <i class="fi fi-brands-linkedin flex justify-center items-center text-neutral-content"></i>
-                {% else %}
-                <i class="fi fi-rr-globe flex justify-center items-center text-neutral-content"></i>
                 {% endif %}
-                <p class="text-neutral-content">
-                    {{ social.name }}
-                </p>
-            </a>
+                <a href="{{social.url}}" class="cursor-pointer flex justify-center items-center gap-2 border-neutral px-5 py-4 border-1 rounded-lg w-fit text-xl bg-neutral">
+                    {% if social.name == 'Facebook' %}
+                    <i class="fi fi-brands-facebook text-neutral-content"></i>
+                    {% elif social.name == 'Instagram' %}
+                    <i class="fi fi-brands-instagram text-neutral-content"></i>
+                    {% elif social.name == 'Github' %}
+                    <i class="fi fi-brands-github text-neutral-content"></i>
+                    {% elif social.name == 'X' %}
+                    <i class="fi fi-brands-twitter-alt text-neutral-content"></i>
+                    {% elif social.name == 'LinkedIn' %}
+                    <i class="fi fi-brands-linkedin text-neutral-content"></i>
+                    {% else %}
+                    <i class="fi fi-rr-globe text-neutral-content"></i>
+                    {% endif %}
+                    <p class="text-neutral-content">{{ social.name }}</p>
+                </a>
+            </div>
+            {% endfor %}
         </div>
     </div>
-    {% endfor %}
-    </div>
 </div>
+
+<dialog id="create_form_container" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <form method="post" action="{% url 'social_create' %}">
+        {% csrf_token %}
+        {{ social_form }}
+        <button type="submit" class="btn btn-primary">
+            Submit
+        </button>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="form_container" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <form method="post" id="social_form">
+        {% csrf_token %}
+        {{ social_form }}
+        <button type="submit" class="btn btn-primary">
+            Submit
+        </button>
+    </form>
+  </div>
+</dialog>
+{% endblock %}
+
+{% block script %}
+<script>
+    function editForm(name, url){
+        const name_input = document.querySelector('#id_name');
+        const url_input = document.querySelector('#id_url');
+        const form_url = document.querySelector('#editButton').dataset.url;
+        const form = document.querySelector('#social_form');
+
+        name_input.value = name ?? '';
+        url_input.value = url ?? '';
+        form.action = form_url;
+
+    }
+</script>
 {% endblock %}

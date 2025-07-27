@@ -41,5 +41,36 @@ class Social(models.Model):
         'X': 'X'
     }
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='socials')
-    name = models.CharField(max_length=255, choices=choices )
+    name = models.CharField(max_length=255, choices=choices, unique=True)
     url = models.URLField()
+
+class Inquiry(models.Model):
+    status = {
+        'Declined' : 'Declined',
+        'Pending' : 'Pending',
+        'Approved' : 'Approved'
+    }
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inquiries') 
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='inquiries') 
+    message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=status, default='Pending')
+    read = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'service')
+        
+    def __str__(self):
+        return f'{self.service.name} Inquiry by {self.user.username}'
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='bookmarks')
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Support(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='supports')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='supports')
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

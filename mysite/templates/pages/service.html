@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% block style %}
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-straight/css/uicons-regular-straight.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-straight/css/uicons-solid-straight.css'>
+{% endblock %}
 {% block body %}
 <div class="flex flex-col w-full h-full justify-between items-center">
     <div class="flex w-full p-4 justify-end">
@@ -70,6 +76,21 @@
             <div class="card-actions justify-end">
             <div class="badge badge-outline">{{ service.category }}</div>
             </div>
+            {% if request.user != service.user %}
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-primary" 
+                data-update-url="{% url 'inquiry_create' service.id %}"
+                onclick="inquiry_modal.showModal(); changeAction()"
+                id="inquiry_button"
+                >Inquire</button>
+                <button class="btn"><i class="fi fi-rr-bookmark"></i></button>
+                <!-- If user bookmarked, changed fi-rr-bookmark to fi-sr-bookmark -->
+                <!-- <button class="btn"><i class="fi fi-sr-bookmark"></i></button> -->
+                <button class="btn"><i class="fi fi-rs-heart-partner-handshake"></i></button>
+                <!-- If liked, rs to ss -->
+                <!-- <i class="fi fi-ss-heart-partner-handshake"></i> -->
+            </div>
+            {% endif %}
         </div>
     </div>
     {% empty %}
@@ -97,6 +118,22 @@
         </div>
     </fieldset>
 </dialog>
+
+<dialog id="inquiry_modal" class="modal">
+  <div class="modal-box flex justify-center">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 h-3/4">
+        <legend class="fieldset-legend text-xl">Inquiry</legend>
+            <form method="post" id="inquiry_form" class="flex flex-col gap-2" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ inquiry_form.as_p }}
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+        </div>
+    </fieldset>
+</dialog>
 {% endblock %}
 
 {% block script %}
@@ -105,6 +142,13 @@
         // Removes all alert in 3sec
         document.querySelector('.alert').remove()
     }, 3000)
+
+    function changeAction(){
+        const action = document.querySelector('#inquiry_button').dataset.updateUrl;
+        const inquiry_form = document.querySelector('#inquiry_form');
+
+        inquiry_form.action = action;
+    }
 
     function updateForm(button, id, name, description, image, category){
         name_input = document.querySelector('#id_name');

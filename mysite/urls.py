@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import SocialCreateView, SocialListView, SocialFormView, IndexView, RegisterView, UserLogoutView, UserLoginView, ServiceListView, ServiceCreateView, ServiceEditView, ServiceDeleteView, PortfolioView, PortfolioUpdateView, ProjectListView, ProjectCreateView, ProjectUpdateView, ProjectDeleteView
+from .views import InquiryCreateView, SocialCreateView, SocialUpdateView, SocialDeleteView, SocialListView, SocialFormView, IndexView, RegisterView, UserLogoutView, UserLoginView, ServiceListView, ServiceCreateView, ServiceEditView, ServiceDeleteView, PortfolioView, PortfolioUpdateView, ProjectListView, ProjectCreateView, ProjectUpdateView, ProjectDeleteView
 
 urlpatterns = [
     path('servfolio/', IndexView.as_view(), name='index'),
@@ -12,6 +12,7 @@ urlpatterns = [
     path('servfolio/services/create/', ServiceCreateView.as_view(), name='service_create'),
     path('servfolio/services/update/<int:pk>/', ServiceEditView.as_view(), name='service_update'),
     path('servfolio/services/delete/<int:pk>/', ServiceDeleteView.as_view(), name='service_delete'),
+    path('servfolio/services/inquiry/<int:pk>/', InquiryCreateView.as_view(), name='inquiry_create' ),
     path('servfolio/<str:username>/index/', PortfolioView.as_view(), name='portfolio'),
     path('servfolio/<str:username>/projects/', ProjectListView.as_view(), name='project' ),
     path('servfolio/projects/create/', ProjectCreateView.as_view(), name='project_create' ),
@@ -20,7 +21,9 @@ urlpatterns = [
     path('servfolio/<int:pk>/update/', PortfolioUpdateView.as_view(), name='portfolio_update'),
     path('servfolio/social/form/', SocialFormView.as_view(), name='social_form'),
     path('servfolio/social/create/', SocialCreateView.as_view(), name='social_create'),
-    path('servfolio/socials/<str:username>', SocialListView.as_view(), name='social')
+    path('servfolio/socials/<str:username>', SocialListView.as_view(), name='social'),
+    path('servfolio/socials/update/<int:pk>', SocialUpdateView.as_view(), name='social_update'),
+    path('servfolio/socials/delete/<int:pk>', SocialDeleteView.as_view(), name='social_delete'),
 
 
 ]

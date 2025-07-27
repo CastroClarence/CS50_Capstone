@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from .models import Service, Portfolio, Project, Social
+from .models import Service, Portfolio, Project, Social, Inquiry
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -96,3 +96,14 @@ class SocialForm(forms.ModelForm):
     class Meta:
         model = Social
         fields = ['name', 'url']
+
+class InquiryForm(forms.ModelForm):
+    class Meta:
+        model = Inquiry
+        fields = ['message']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['message'].widget.attrs.update({
+            'class' : 'textarea'
+        })
