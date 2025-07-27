@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @source "./public/*.{html,js}";
 @plugin "daisyui" {
-themes: corporate --default, dark --prefersdark;
+themes: cupcake --default, coffee --prefersdark;
 }
 
 @plugin "daisyui/theme" {
