@@ -51,7 +51,7 @@
         {% endif %}
         </ul>
     </div>
-    <div class="navbar-end">
+    <div class="lg:navbar-end hidden">
         <label class="swap swap-rotate">
         <!-- this hidden checkbox controls the state -->
         <input type="checkbox" class="theme-controller" value="cupcake" id="theme-toggle"/>
@@ -104,29 +104,101 @@
             <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
-            <ul class="list">
+            <ul class="flex flex-col w-full">
                 <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Inquiry</li>
-                {% for inquiry in inquiries_unread %}
-                <li class="list-row">
-                    <div>
-                        <div>{{ inquiry.user.username }}</div>
-                        <div class="text-xs uppercase font-semibold opacity-60">{{ inquiry.service.name }}</div>
+                <div class="tabs tabs-lift">
+                    <input type="radio" name="my_tabs_3" class="tab" aria-label="Sent" />
+                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                        {% for inquiry in inquiries_sent %}
+                        <div class="collapse">
+                            <input type="checkbox" />
+                            <li class="list-row collapse-title flex flex-row">
+                                <div>
+                                    <div class="font-semibold">{{ inquiry.user.username }}</div>
+                                    <div>{{ inquiry.service.name }}</div>
+                                </div>
+                                <form class="flex justify-end gap-2 flex-grow" method="post" action="{% url 'inquiry_update' inquiry.id %}" onsubmit="return confirm('Are you sure you want to continue?')">
+                                    {% csrf_token %}
+                                    <button class="btn btn-square btn-ghost z-10" type="submit" name="action" value="Declined">
+                                        <img src="{% static 'svg/cross-circle.svg' %}" alt="Decline Button" class="size-[1.2em]">
+                                    </button>
+                                    <button class="btn btn-square btn-ghost z-10" name="action" value="Approved" type="submit">
+                                        <img src="{% static 'svg/check-circle.svg' %}" alt="Approve Button" class="size-[1.2em]">
+                                    </button>
+                                </form>
+                            </li>
+                            <div class="collapse-content text-sm">
+                                "{{inquiry.message}}"
+                                <br>
+                                -{{ inquiry.created_at }}
+                            </div>
+                        </div>
+                        <hr>
+                        {% empty %}
+                        <div>
+                            No sent inquiries yet.
+                        </div>
+                        {% endfor %}
                     </div>
-                    <p class="list-col-wrap text-xs">
-                        "{{ inquiry.message }}"
-                        </br>
-                        -{{ inquiry.created_at }}
-                    </p>
-                    <div class="flex justify-end gap-2">
-                        <button class="btn btn-square btn-ghost">
-                        <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
-                        </button>
-                        <button class="btn btn-square btn-ghost">
-                        <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></g></svg>
-                        </button>
+
+                    <input type="radio" name="my_tabs_3" class="tab" aria-label="Unread" checked="checked" />
+                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                        {% for inquiry in inquiries_unread %}
+                        <div class="collapse">
+                            <input type="checkbox" />
+                            <li class="list-row collapse-title flex flex-row">
+                                <div>
+                                    <div class="font-semibold">{{ inquiry.user.username }}</div>
+                                    <div>{{ inquiry.service.name }}</div>
+                                </div>
+                                <form class="flex justify-end gap-2 flex-grow" method="post" action="{% url 'inquiry_update' inquiry.id %}" onsubmit="return confirm('Are you sure you want to continue?')">
+                                    {% csrf_token %}
+                                    <button class="btn btn-square btn-ghost z-10" type="submit" name="action" value="Declined">
+                                        <img src="{% static 'svg/cross-circle.svg' %}" alt="Decline Button" class="size-[1.2em]">
+                                    </button>
+                                    <button class="btn btn-square btn-ghost z-10" name="action" value="Approved" type="submit">
+                                        <img src="{% static 'svg/check-circle.svg' %}" alt="Approve Button" class="size-[1.2em]">
+                                    </button>
+                                </form>
+                            </li>
+                            <div class="collapse-content text-sm">
+                                "{{inquiry.message}}"
+                                <br>
+                                -{{ inquiry.created_at }}
+                            </div>
+                        </div>
+                        <hr>
+                        {% empty %}
+                        <div>
+                            No inquiry yet.
+                        </div>
+                        {% endfor %}
                     </div>
-                </li>
-                {% endfor %}
+                    <input type="radio" name="my_tabs_3" class="tab" aria-label="Read" />
+                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                        {% for inquiry in inquiries_read %}
+                        <div class="collapse">
+                            <input type="checkbox" />
+                            <li class="list-row collapse-title flex flex-row">
+                                <div>
+                                    <div class="font-semibold">{{ inquiry.user.username }}</div>
+                                    <div>{{ inquiry.service.name }}</div>
+                                </div>
+                            </li>
+                            <div class="collapse-content text-sm">
+                                "{{inquiry.message}}"
+                                <br>
+                                -{{ inquiry.created_at }}
+                            </div>
+                        </div>
+                        <hr>
+                        {% empty %}
+                        <div>
+                            No inquiry yet.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </ul>
         </div>
     </dialog>

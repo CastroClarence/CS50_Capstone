@@ -245,3 +245,20 @@ class InquiryCreateView(CreateView):
         form.instance.service = get_object_or_404(Service, pk=service)
         return super().form_valid(form)
     
+class InquiryUpdateView(UpdateView):
+    model = Inquiry
+    fields = []
+    success_url = reverse_lazy('service')
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        action = request.POST.get('action')
+        if action == 'Approved':
+            self.object.status = 'Approved'
+        elif action == 'Declined':
+            self.object.status = 'Declined'
+        self.object.read = 'True'
+        self.object.save()
+        
+        return redirect(self.success_url)

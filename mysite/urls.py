@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import InquiryCreateView, SocialCreateView, SocialUpdateView, SocialDeleteView, SocialListView, SocialFormView, IndexView, RegisterView, UserLogoutView, UserLoginView, ServiceListView, ServiceCreateView, ServiceEditView, ServiceDeleteView, PortfolioView, PortfolioUpdateView, ProjectListView, ProjectCreateView, ProjectUpdateView, ProjectDeleteView
+from .views import InquiryCreateView, InquiryUpdateView, SocialCreateView, SocialUpdateView, SocialDeleteView, SocialListView, SocialFormView, IndexView, RegisterView, UserLogoutView, UserLoginView, ServiceListView, ServiceCreateView, ServiceEditView, ServiceDeleteView, PortfolioView, PortfolioUpdateView, ProjectListView, ProjectCreateView, ProjectUpdateView, ProjectDeleteView
 
 urlpatterns = [
     path('servfolio/', IndexView.as_view(), name='index'),
@@ -13,6 +13,7 @@ urlpatterns = [
     path('servfolio/services/update/<int:pk>/', ServiceEditView.as_view(), name='service_update'),
     path('servfolio/services/delete/<int:pk>/', ServiceDeleteView.as_view(), name='service_delete'),
     path('servfolio/services/inquiry/<int:pk>/', InquiryCreateView.as_view(), name='inquiry_create' ),
+    path('servfolio/service/inquiry/<int:pk>/update/', InquiryUpdateView.as_view(), name='inquiry_update'),
     path('servfolio/<str:username>/index/', PortfolioView.as_view(), name='portfolio'),
     path('servfolio/<str:username>/projects/', ProjectListView.as_view(), name='project' ),
     path('servfolio/projects/create/', ProjectCreateView.as_view(), name='project_create' ),
