@@ -44,6 +44,7 @@ class ServiceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
         context['service_form'] = ServiceCreateForm()
         context['inquiry_form'] = InquiryForm()
         return context
