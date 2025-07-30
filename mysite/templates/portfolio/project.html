@@ -52,7 +52,9 @@
                 {{ project.name }}
                 <div class="badge badge-secondary">NEW</div>
                 </h2>
-                <p class="break-words">{{ project.description }}</p>
+                <div class="h-20 break-words max-h-20 overflow-y-auto">
+                    {{ project.description }}
+                </div>
                 <div class="card-actions justify-end">
                 <div class="badge badge-outline">{{ project.service.category }}</div>
                 </div>

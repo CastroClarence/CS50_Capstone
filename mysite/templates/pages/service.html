@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load service_tags %}
 {% block style %}
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -23,14 +24,14 @@
         {% endfor %}
     {% endif %}
 
-    <div class="flex h-full w-full">
+    <div class="flex h-full w-full gap-2">
     {% for service in object_list %}
         <!-- Container of Service List -->
     
-    <div class="card bg-base-100 w-96 h-96 shadow-sm border-1 border-primary-content">
-        <figure>
+    <div class="card bg-base-100 w-96 h-96 shadow-lg">
+        <figure class="flex-2 border-b-1  border-primary-content">
             {% if request.user == service.user %}
-            <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer">
+            <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute cursor-pointer">
                 <div tabindex="0" role="button" class="cursor-pointer">...</div>
                 <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
                     <li>
@@ -66,31 +67,44 @@
             src="{{ service.image.url }}"
             alt="{{ service.name }}" />
         </figure>
-        <div class="card-body">
+        <div class="card-body flex-1 bg-secondary rounded-b-box">
             <h2 class="card-title">
             {{ service.name }}
             <div class="badge badge-secondary">NEW</div>
             </h2>
             <p class="text-xs">by: <a class="underline hover:text-blue-500" href="{% url 'portfolio' service.user.username %}"> {{ service.user.username }} </a></p>
-            <p>{{ service.description }}</p>
+            <div class="overflow-y-auto break-words max-h-16 h-16">{{ service.description }}</div>
             <div class="card-actions justify-end">
             <div class="badge badge-outline">{{ service.category }}</div>
             </div>
-            {% if request.user != service.user %}
             <div class="flex justify-end gap-2">
-                <button class="btn btn-primary" 
+                {% if request.user != service.user %}
+                <button class="btn btn-primary btn-sm" 
                 data-update-url="{% url 'inquiry_create' service.id %}"
                 onclick="inquiry_modal.showModal(); changeAction()"
                 id="inquiry_button"
                 >Inquire</button>
-                <button class="btn"><i class="fi fi-rr-bookmark"></i></button>
-                <!-- If user bookmarked, changed fi-rr-bookmark to fi-sr-bookmark -->
-                <!-- <button class="btn"><i class="fi fi-sr-bookmark"></i></button> -->
-                <button class="btn"><i class="fi fi-rs-heart-partner-handshake"></i></button>
-                <!-- If liked, rs to ss -->
-                <!-- <i class="fi fi-ss-heart-partner-handshake"></i> -->
+                <button class="btn btn-sm" onclick="bookmark()">
+                    {% if not service|is_bookmarked:request.user %}
+                    <i class="fi fi-rr-bookmark" id="bookmark-icon" 
+                    data-url="{% url 'bookmark_view' service.id %}">
+                    </i>
+                    {% else %}
+                    <i class="fi fi-sr-bookmark" id="bookmark-icon" 
+                    data-url="{% url 'bookmark_view' service.id %}">
+                    </i>
+                    {% endif %}
+                </button>
+                {% endif %}
+                <button class="btn btn-sm" onclick="support('{{service.id}}')">
+                    {% if not service|is_supported:request.user %}
+                    <i class="fi fi-rs-heart-partner-handshake" id="support-{{service.id}}-icon" data-url="{% url 'support_view' service.id %}"></i>
+                    {% else %}
+                    <i class="fi fi-ss-heart-partner-handshake" id="support-{{service.id}}-icon" data-url="{% url 'support_view' service.id %}"></i>
+                    {% endif %}
+                    <i id="support-{{service.id}}-count">{{ service.support_count }}</i>
+                </button>
             </div>
-            {% endif %}
         </div>
     </div>
     {% empty %}
@@ -138,6 +152,103 @@
 
 {% block script %}
 <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function bookmark(){
+        const bookmark_button = document.querySelector('#bookmark-icon')
+        const url = bookmark_button.dataset.url;
+        const csrf = getCookie('csrftoken')
+        if (bookmark_button.classList.contains('fi-rr-bookmark')){
+            fetch(url,  {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken' : csrf,
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success){
+                    bookmark_button.classList.remove('fi-rr-bookmark')
+                    bookmark_button.classList.add('fi-sr-bookmark')
+                }
+            });
+
+        } else {
+            fetch(url,  {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken' : csrf,
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success){
+                    console.log(data.success)
+                    bookmark_button.classList.remove('fi-sr-bookmark')
+                    bookmark_button.classList.add('fi-rr-bookmark')    
+                }
+            });  
+        }
+    }
+
+    function support(id){
+        const support_button = document.querySelector(`#support-${id}-icon`)
+        const support_count = document.querySelector(`#support-${id}-count`)
+        let currentCount = parseInt(support_count.textContent) || 0;
+        const url = support_button.dataset.url;
+        const csrf = getCookie('csrftoken')
+        if (support_button.classList.contains('fi-rs-heart-partner-handshake')){
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                   'X-CSRFToken':  csrf,
+                   'Content-Type': 'application/json',
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success){
+                    support_button.classList.remove('fi-rs-heart-partner-handshake')
+                    support_button.classList.add('fi-ss-heart-partner-handshake')
+                    support_count.textContent = currentCount + 1
+                }
+            })
+        } else {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                   'X-CSRFToken':  csrf,
+                   'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success){
+                    console.log(data.success)
+                    support_button.classList.remove('fi-ss-heart-partner-handshake')
+                    support_button.classList.add('fi-rs-heart-partner-handshake')    
+                    support_count.textContent = currentCount - 1
+                }
+            })
+        }
+    }
+
     setTimeout(() => {
         // Removes all alert in 3sec
         document.querySelector('.alert').remove()

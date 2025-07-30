@@ -79,6 +79,8 @@
             <div tabindex="0" role="button" class="m-1 btn btn-neutral">Hello, {{ request.user.username }} <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div></div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
                 <li><a onclick="inquiries_list_modal.showModal()">Inquiry <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div> </a></li>
+                <li><a >Bookmark</a></li>
+                <li><a >Support</a></li>
                 <li>
                     <form action="{% url 'logout' %}" method="post">
                         {% csrf_token %}
@@ -117,15 +119,6 @@
                                     <div class="font-semibold">{{ inquiry.user.username }}</div>
                                     <div>{{ inquiry.service.name }}</div>
                                 </div>
-                                <form class="flex justify-end gap-2 flex-grow" method="post" action="{% url 'inquiry_update' inquiry.id %}" onsubmit="return confirm('Are you sure you want to continue?')">
-                                    {% csrf_token %}
-                                    <button class="btn btn-square btn-ghost z-10" type="submit" name="action" value="Declined">
-                                        <img src="{% static 'svg/cross-circle.svg' %}" alt="Decline Button" class="size-[1.2em]">
-                                    </button>
-                                    <button class="btn btn-square btn-ghost z-10" name="action" value="Approved" type="submit">
-                                        <img src="{% static 'svg/check-circle.svg' %}" alt="Approve Button" class="size-[1.2em]">
-                                    </button>
-                                </form>
                             </li>
                             <div class="collapse-content text-sm">
                                 "{{inquiry.message}}"

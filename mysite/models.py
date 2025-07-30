@@ -20,6 +20,9 @@ class Service(models.Model):
     def __str__(self):
         return f'{self.name}'
     
+    def support_count(self):
+        return self.supports.filter(status = True).count()
+    
 class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='projects')
@@ -66,11 +69,13 @@ class Inquiry(models.Model):
 class Bookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='bookmarks')
-    read = models.BooleanField(default=False)
+    status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Support(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='supports')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='supports')
-    read = models.BooleanField(default=False)
+    status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+         

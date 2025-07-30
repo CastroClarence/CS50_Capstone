@@ -1,17 +1,18 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView, DetailView, FormView
+from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView, DetailView, FormView, View
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout
 from .forms import RegisterForm, CustomLoginForm, ServiceCreateForm, PortfolioForm, ProjectForm, SocialForm, InquiryForm
-from .models import Service, Portfolio, Social, Project, Inquiry
+from .models import Service, Portfolio, Social, Project, Inquiry, Bookmark, Support
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.db import IntegrityError
+from django.views.decorators.csrf import csrf_protect
 
 
 # Create your views here.
@@ -47,6 +48,7 @@ class ServiceListView(ListView):
         user = self.request.user
         context['service_form'] = ServiceCreateForm()
         context['inquiry_form'] = InquiryForm()
+        context['service_bookmarked'] = list(Bookmark.objects.filter(user = self.request.user).values_list('service_id', flat=True))
         return context
     
 
@@ -260,5 +262,31 @@ class InquiryUpdateView(UpdateView):
             self.object.status = 'Declined'
         self.object.read = 'True'
         self.object.save()
-        
+
         return redirect(self.success_url)
+    
+@method_decorator(csrf_protect, name='dispatch')
+class BookmarkView(View):
+    def post(self, request, *args, **kwargs):
+        service = get_object_or_404(Service, id=kwargs['pk'])
+        bookmark, created = Bookmark.objects.get_or_create(
+            user = request.user,
+            service = service
+        )
+        bookmark.status = not bookmark.status
+        bookmark.save()
+        return JsonResponse({
+            'success': True,
+            'status' : bookmark.status
+        })
+    
+class SupportView(View):
+    def post(self, request, **kwargs):
+        service = Service.objects.get(id = kwargs['pk'])
+        support, created = Support.objects.get_or_create(user = request.user, service = service)
+        support.status = not support.status
+        support.save()
+        return JsonResponse({
+            'success' : True,
+            'status' : support.status
+        })
