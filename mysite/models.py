@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your models here.
 
@@ -23,12 +25,25 @@ class Service(models.Model):
     def support_count(self):
         return self.supports.filter(status = True).count()
     
+    
 class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='projects')
     name = models.CharField(max_length=255)
     description = models.TextField()
     image = models.ImageField(upload_to='project/', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_new(self):
+        now = timezone.now()
+        if (now - self.created_at) <= timedelta(days=7):
+            return {
+                'is_new' : True
+            }
+        else: 
+            return {
+                'is_new' : False
+            }
     
 class Portfolio(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='portfolio')
@@ -44,8 +59,11 @@ class Social(models.Model):
         'X': 'X'
     }
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='socials')
-    name = models.CharField(max_length=255, choices=choices, unique=True)
+    name = models.CharField(max_length=255, choices=choices)
     url = models.URLField()
+
+    class Meta:
+        unique_together = ('user', 'name')
 
 class Inquiry(models.Model):
     status = {

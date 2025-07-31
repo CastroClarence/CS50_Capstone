@@ -1,6 +1,6 @@
 {% extends "base_portfolio.html" %}
 {% block body %}
-<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-4 px-4">
     {% if is_owner %}
     <div class="flex justify-end">
         <div class="flex gap-2">
@@ -11,13 +11,23 @@
     </div>
     {% endif %}
     <div>
-        <p class="text-5xl font-bold">Projects</p>
+        <p class="text-5xl font-bold text-accent">Projects</p>
     </div>
-    <div class="flex gap-2">
+    <div class="flex gap-4">
         {% for project in object_list %}
         <!-- Cards of the Projects -->
-        <div class="card bg-base-100 w-96 h-96 shadow-sm border-1 border-primary-content">
-            <figure class="flex-2">
+        <div class="card bg-base-100 w-96 h-96 shadow-lg ">
+            <figure class="flex-2 bg-base-200">
+                {% if project.image %}
+                <img
+                class="h-full p-2"
+                src="{{ project.image.url }}"
+                alt="{{ project.name }}" />
+                {% else %}
+                <p> No image provided. </p>
+                {% endif %}
+            </figure>
+            <div class="card-body flex-1 relative">
                 {% if is_owner %}
                 <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer">
                     <div tabindex="0" role="button" class="cursor-pointer">...</div>
@@ -25,7 +35,7 @@
                         <li><button 
                             data-update-url="{% url 'project_update' project.id %}"
                             id="project-btn"
-                            onclick="editForm('{{project.id}}', '{{project.name}}', '{{project.description}}', '{{project.image.url}}', '{{project.service.id}}'); project_modal.showModal();">Edit</button></li>
+                            onclick="editForm('{{project.id|escapejs}}', '{{project.name|escapejs}}', '{{project.description|escapejs}}', '{{project.image.url|escapejs}}', '{{project.service.id|escapejs}}'); project_modal.showModal();">Edit</button></li>
                         <li>
                             <button form="delete-form-{{ project.id }}" type="submit">
                                 Delete
@@ -38,19 +48,11 @@
                     </ul>
                 </div>
                 {% endif %}
-                {% if project.image %}
-                <img
-                class="h-full p-2"
-                src="{{ project.image.url }}"
-                alt="{{ project.name }}" />
-                {% else %}
-                <p> No image provided. </p>
-                {% endif %}
-            </figure>
-            <div class="card-body flex-1">
                 <h2 class="card-title">
                 {{ project.name }}
+                {% if project.is_new %}
                 <div class="badge badge-secondary">NEW</div>
+                {% endif %}
                 </h2>
                 <div class="h-20 break-words max-h-20 overflow-y-auto">
                     {{ project.description }}

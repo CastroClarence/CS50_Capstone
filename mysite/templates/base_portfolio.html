@@ -10,92 +10,266 @@
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
 </head>
 <body>
-    <div class="navbar bg-base-100 shadow-sm fixed">
-    <div class="navbar-start">
-        <div class="dropdown">
-        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
-        </div>
-        <ul
-            tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-            <li><a>Item 1</a></li>
-            <li>
-            <a>Parent</a>
-            <ul class="p-2">
-                <li><a>Submenu 1</a></li>
-                <li><a>Submenu 2</a></li>
+    <div class="min-h-screen w-screen flex flex-col">
+        <div class="navbar bg-base-100 shadow-sm sticky top-0 z-40">
+        <div class="navbar-start">
+            <div class="dropdown">
+            <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+            </div>
+            <ul
+                tabindex="0"
+                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                <li><a>Item 1</a></li>
+                <li>
+                <a>Parent</a>
+                <ul class="p-2">
+                    <li><a>Submenu 1</a></li>
+                    <li><a>Submenu 2</a></li>
+                </ul>
+                </li>
+                <li><a>Item 3</a></li>
             </ul>
-            </li>
-            <li><a>Item 3</a></li>
-        </ul>
+            </div>
+            <a class="btn btn-ghost text-xl" href="{% url 'index' %}">Servfolio</a>
         </div>
-        <a class="btn btn-ghost text-xl" href="{% url 'index' %}">Servfolio</a>
-    </div>
-    <div class="navbar-center hidden lg:flex">
-        <!-- Desktop -->
-        <ul class="menu menu-horizontal px-1">
-        <li><a href="{% url 'portfolio' owner.username %}">Home</a></li>
-        <!-- <li>
-            <details>
-            <summary>About Us</summary>
-            <ul class="p-2">
-                <li><a>Submenu 1</a></li>
-                <li><a>Submenu 2</a></li>
-            </ul>
-            </details>
-        </li> -->
-        <li><a href="{% url 'project' owner.username %}">Projects</a></li>
-        {% if request.user == owner %}
-            {% if owner.object.socials %}
-            <li><a href="{% url 'social_form' %}">Socials</a></li>
+        <div class="navbar-center hidden lg:flex">
+            <!-- Desktop -->
+            <ul class="menu menu-horizontal px-1">
+            <li><a href="{% url 'portfolio' owner.username %}">Home</a></li>
+            <li><a href="{% url 'service_user' owner.username %}">Services</a></li>
+            <!-- <li>
+                <details>
+                <summary>About Us</summary>
+                <ul class="p-2">
+                    <li><a>Submenu 1</a></li>
+                    <li><a>Submenu 2</a></li>
+                </ul>
+                </details>
+            </li> -->
+            {% if request.user == owner %}
+                {% if owner.socials.all %}
+                <li><a href="{% url 'social' owner.username %}">Social</a></li>
+                {% else %}
+                <li><a href="{% url 'social_form' %}">Socials</a></li>
+                {% endif %}
             {% else %}
             <li><a href="{% url 'social' owner.username %}">Socials</a></li>
             {% endif %}
-        {% else %}
-        <li><a href="{% url 'social' owner.username %}">Socials</a></li>
-        {% endif %}
-        </ul>
-    </div>
-    <div class="navbar-end">
-        <label class="swap swap-rotate">
-        <!-- this hidden checkbox controls the state -->
-        <input type="checkbox" class="theme-controller" value="cupcake" id="theme-toggle"/>
-
-        <!-- sun icon -->
-        <svg
-            class="swap-off h-10 w-10 fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24">
-            <path
-            d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
-        </svg>
-
-        <!-- moon icon -->
-        <svg
-            class="swap-on h-10 w-10 fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24">
-            <path
-            d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
-        </svg>
-        </label>
-        {% if request.user.is_authenticated %}
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button class="btn" type="submit">Logout</button>
-        </form>
-        {% else %}
-        <a class="btn" href="{% url 'login' %}">Login</a>
-        {% endif %}
-    </div>
-    </div>
-    <div class="px-4">
-        <div class="pt-20 min-w-full h-screen">
+            </ul>
+        </div>
+        <div class="lg:navbar-end hidden ">
+            <label class="swap swap-rotate">
+            <!-- this hidden checkbox controls the state -->
+            <input type="checkbox" class="theme-controller" value="cupcake" id="theme-toggle"/>
+    
+            <!-- sun icon -->
+            <svg
+                class="swap-off h-10 w-10 fill-current"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24">
+                <path
+                d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+            </svg>
+    
+            <!-- moon icon -->
+            <svg
+                class="swap-on h-10 w-10 fill-current"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24">
+                <path
+                d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
+            </svg>
+            </label>
+            {% if request.user.is_authenticated %}
+            <div class="dropdown dropdown-bottom dropdown-end dropdown-hover">
+                <div tabindex="0" role="button" class="m-1 btn btn-neutral">Hello, {{ request.user.username }} <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div></div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow-sm">
+                    <li><a onclick="inquiries_list_modal.showModal()">Inquiry <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div> </a></li>
+                    <li><a onclick="bookmark_modal.showModal()">Bookmark</a></li>
+                    <li><a onclick="support_modal.showModal()">Support</a></li>
+                    <li>
+                        <button type="submit" form="logout_form">Logout</button>
+                    </li>
+                    <form action="{% url 'logout' %}" method="post" class="hidden" id="logout_form">
+                        {% csrf_token %}
+                    </form>
+                </ul>
+            </div>
+            {% else %}
+            <a class="btn" href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+        </div>
+        <div class="flex-1 flex flex-col">
             {% block body %}
             {% endblock %}
         </div>
     </div>
+
+    <dialog id="inquiries_list_modal" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <ul class="flex flex-col w-full">
+                <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Inquiry</li>
+                <div class="tabs tabs-lift">
+                    <input type="radio" name="my_tabs_3" class="tab" aria-label="Sent" />
+                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                        {% for inquiry in inquiries_sent %}
+                        <div class="collapse">
+                            <input type="checkbox" />
+                            <li class="list-row collapse-title flex flex-row">
+                                <div>
+                                    <div class="font-semibold">{{ inquiry.user.username }}</div>
+                                    <div>{{ inquiry.service.name }}</div>
+                                </div>
+                                <div class="flex justify-end items-center flex-grow gap-2">
+                                    <div class="inline-grid *:[grid-area:1/1]">
+                                    {% if inquiry.status == 'Pending'%}
+                                    <div class="status status-info animate-ping"></div>
+                                    <div class="status status-info"></div>
+                                    {% elif inquiry.status == 'Approved' %}
+                                    <div class="status status-success animate-ping"></div>
+                                    <div class="status status-success"></div>
+                                    {% else %}
+                                    <div class="status status-error animate-ping"></div>
+                                    <div class="status status-error"></div>
+                                    {% endif %}
+                                    </div> 
+                                    {{ inquiry.status }}
+                                </div>
+                            </li>
+                            <div class="collapse-content text-sm">
+                                "{{inquiry.message}}"
+                                <br>
+                                -{{ inquiry.created_at }}
+                            </div>
+                        </div>
+                        <hr>
+                        {% empty %}
+                        <div>
+                            No sent inquiries yet.
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <input type="radio" name="my_tabs_3" class="tab" aria-label="Unread" checked="checked" />
+                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                        {% for inquiry in inquiries_unread %}
+                        <div class="collapse">
+                            <input type="checkbox" />
+                            <li class="list-row collapse-title flex flex-row">
+                                <div>
+                                    <div class="font-semibold">{{ inquiry.user.username }}</div>
+                                    <div>{{ inquiry.service.name }}</div>
+                                </div>
+                                <form class="flex justify-end gap-2 flex-grow" method="post" action="{% url 'inquiry_update' inquiry.id %}" onsubmit="return confirm('Are you sure you want to continue?')">
+                                    {% csrf_token %}
+                                    <button class="btn btn-square btn-ghost z-10" type="submit" name="action" value="Declined">
+                                        <img src="{% static 'svg/cross-circle.svg' %}" alt="Decline Button" class="size-[1.2em]">
+                                    </button>
+                                    <button class="btn btn-square btn-ghost z-10" name="action" value="Approved" type="submit">
+                                        <img src="{% static 'svg/check-circle.svg' %}" alt="Approve Button" class="size-[1.2em]">
+                                    </button>
+                                </form>
+                            </li>
+                            <div class="collapse-content text-sm">
+                                "{{inquiry.message}}"
+                                <br>
+                                -{{ inquiry.created_at }}
+                            </div>
+                        </div>
+                        <hr>
+                        {% empty %}
+                        <div>
+                            No inquiry yet.
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="radio" name="my_tabs_3" class="tab" aria-label="Read" />
+                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                        {% for inquiry in inquiries_read %}
+                        <div class="collapse">
+                            <input type="checkbox" />
+                            <li class="list-row collapse-title flex flex-row">
+                                <div>
+                                    <div class="font-semibold">{{ inquiry.user.username }}</div>
+                                    <div>{{ inquiry.service.name }}</div>
+                                </div>
+                            </li>
+                            <div class="collapse-content text-sm">
+                                "{{inquiry.message}}"
+                                <br>
+                                -{{ inquiry.created_at }}
+                            </div>
+                        </div>
+                        <hr>
+                        {% empty %}
+                        <div>
+                            No inquiry yet.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </ul>
+        </div>
+    </dialog>
+
+    <dialog id="bookmark_modal" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+
+        <ul class="list bg-base-100">
+        
+            <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Bookmarked Services</li>
+            {% for bookmark in bookmarks %}
+            <li class="list-row">
+                <div>
+                <div>{{ bookmark.service.name }}</div>
+                <div class="text-xs uppercase font-semibold opacity-60">{{ bookmark.service.category }}</div>
+                </div>
+                <div class="flex justify-end">
+                    by:<a class="hover:underline font-bold" href="{% url 'portfolio' bookmark.service.user.username %}"> {{ bookmark.service.user.username }}</a>
+                </div>
+            </li>
+            {% empty %}
+            <li>No bookmarked service yet.</li>
+            {% endfor %}
+        
+        </ul>
+        </div>
+    </dialog>
+
+    <dialog id="support_modal" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+
+        <ul class="list bg-base-100">
+        
+            <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Supported Services</li>
+            {% for support in supports %}
+            <li class="list-row">
+                <div>
+                <div>{{ support.service.name }}</div>
+                <div class="text-xs uppercase font-semibold opacity-60">{{ support.service.category }}</div>
+                </div>
+                <div class="flex justify-end">
+                    by:<a class="hover:underline font-bold" href="{% url 'portfolio' support.service.user.username %}"> {{ support.service.user.username }}</a>
+                </div>
+            </li>
+            {% empty %}
+            <li>No bookmarked service yet.</li>
+            {% endfor %}
+        
+        </ul>
+        </div>
+    </dialog>
 
     {% block script %}
     {% endblock %}

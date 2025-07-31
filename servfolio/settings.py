@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'mysite',
+    'mathfilters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,6 +62,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'utils.context_processors.get_inquiries',
+                'utils.context_processors.get_owner',
                 'utils.context_processors.get_bookmarks',
                 'utils.context_processors.get_supports',
                 'django.template.context_processors.debug',

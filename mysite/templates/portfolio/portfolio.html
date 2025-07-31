@@ -1,6 +1,6 @@
 {% extends "base_portfolio.html" %}
 {% block body %}
-<div class="hero bg-base-200 min-h-full min-w-full relative">
+<div class="hero bg-base-200 min-h-full max-h-full min-w-full  relative  rounded-box p-[1rem]">
     {% if owner == request.user %}
     <div class="absolute top-5 left-5 z-10">
         <button class="btn-xs btn btn-secondary" onclick="portfolio_modal.showModal(); editForm('{{ object.profile_picture.url }}', '{{ object.description }}')">
@@ -8,7 +8,7 @@
         </button>
     </div>
     {% endif %}
-  <div class="hero-content min-w-full  flex-row justify-between lg:flex-row-reverse">
+  <div class="hero-content min-w-full  flex-row justify-between lg:flex-row-reverse p-0">
     <img
       src="{{ object.profile_picture.url }}"
       class="max-w-sm rounded-lg shadow-2xl"
@@ -18,7 +18,7 @@
       <p class="py-6">
         {{ object.description }}
       </p>
-      <a class="btn btn-primary" href="{% url 'project' object.user.username %}">View Projects</a>
+      <a class="btn btn-primary" href="{% url 'service_user' object.user.username %}">View Services</a>
     </div>
   </div>
 </div>

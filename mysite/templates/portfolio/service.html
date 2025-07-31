@@ -1,0 +1,130 @@
+{% extends "base_portfolio.html" %}
+{% block body %}
+<div class="flex flex-col gap-4 p-4">
+    {% if is_owner %}
+    <div class="flex justify-end">
+        <div class="flex gap-2">
+            <button class="btn btn-sm" onclick="service_modal.showModal()">
+                Add Service
+            </button>
+        </div>
+    </div>
+    {% endif %}
+    <div>
+        <p class="text-5xl font-bold text-accent">Services</p>
+    </div>
+    <div class="flex gap-4">
+        {% for service in object_list %}
+        <!-- Cards of the services -->
+        <div class="card bg-base-100 w-96 h-96 shadow-lg transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 ">
+            <figure class="flex-2 bg-base-200">
+                {% if service.image %}
+                <img
+                class="h-full p-2"
+                src="{{ service.image.url }}"
+                alt="{{ service.name }}" />
+                {% else %}
+                <p> No image provided. </p>
+                {% endif %}
+            </figure>
+            <div class="card-body flex-1 relative">
+                {% if is_owner %}
+                <div class="dropdown dropdown-hover dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer z-10">
+                    <div tabindex="0" role="button" class="cursor-pointer">...</div>
+                    <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
+                        <li>
+                            <button 
+                            data-update-url="{% url 'service_update' service.id %}"
+                            id="service-btn"
+                            onclick="editForm('{{ service.name|escapejs }}', '{{ service.description|escapejs }}', '{{ service.image.url }}', '{{ service.category|escapejs }}'); service_modal.showModal();">
+                            Edit
+                            </button>
+                        </li>
+                        <li>
+                            <button form="delete-form-{{ service.id }}" type="submit">
+                                Delete
+                            </button>
+                        </li>
+                        <form id="delete-form-{{ service.id }}" action="{% url 'service_delete' service.id %}" method="post" class="hidden"
+                        onsubmit="return confirm('Are you sure you want to delete service {{ service.name }}?')">
+                            {% csrf_token %}
+                        </form>
+                    </ul>
+                </div>
+                {% endif %}
+                <h2 class="card-title text-primary underline cursor-pointer">
+                    <a href="{% url 'project' service.user.username service.id %}">
+                        {{ service.name }}
+                    </a>
+                {% if service.is_new %}
+                <div class="badge badge-secondary">NEW</div>
+                {% endif %}
+                </h2>
+                <p class="text-xs">
+                    by: 
+                    <span class="font-bold">
+                        {{ service.user.username }}
+                    </span>
+                </p>
+                <div class="h-20 break-words max-h-20 overflow-y-auto">
+                    {{ service.description }}
+                </div>
+                <div class="card-actions justify-end">
+                <div class="badge badge-outline">{{ service.category }}</div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        No services yet.
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal -->
+  <dialog id="service_modal" class="modal">
+    <!-- service Form Modal -->
+  <div class="modal-box flex justify-center">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 h-3/4">
+        <legend class="fieldset-legend text-xl">Service</legend>
+            <form action="{% url 'service_create' %}" method="post" id="service_form" class="flex flex-col gap-2" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ service_form.as_p }}
+                <div id="preview_container" class="hidden">
+                    <img alt="service's Current Image" id="preview_image" >
+                </div>
+                <button 
+                type="submit" 
+                class="btn btn-primary mt-2"
+                >Submit</button>
+            </form>
+        </div>
+    </fieldset>
+</dialog>
+{% endblock %}
+
+{% block script %}
+<script>
+    function editForm(name, description, imageUrl, category){
+
+        // Create and Add the url of service Edit
+        const name_input = document.querySelector('#id_name');
+        const form = document.querySelector('#service_form');
+        const category_input = document.querySelector('#id_category');
+        const description_input = document.querySelector('#id_description');
+        const preview_container = document.querySelector('#preview_container');
+        const service_btn = document.querySelector('#service-btn');
+
+        category_input.value = category;
+        name_input.value = name;
+        description_input.value = description;
+        preview_container.className.remove;
+        preview_container.className = 'block';
+        document.querySelector('#preview_image').src = imageUrl;
+        form.action = service_btn.dataset.updateUrl;
+        
+    }
+</script>
+{% endblock %}

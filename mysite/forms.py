@@ -97,6 +97,15 @@ class SocialForm(forms.ModelForm):
         model = Social
         fields = ['name', 'url']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({
+            'class' : 'input'
+        })
+        self.fields['url'].widget.attrs.update({
+            'class' : 'input'
+        })
+
 class InquiryForm(forms.ModelForm):
     class Meta:
         model = Inquiry

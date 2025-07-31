@@ -1,7 +1,13 @@
+{% extends 'base_portfolio.html' %}
 {% block body %}
-<form action="{% url 'social_create' %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
+<div class="flex-col flex flex-1 justify-center items-center">
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+        <legend class="fieldset-legend text-xl">Social</legend>
+        <form action="{% url 'social_form' %}" method="post" class="flex gap-4 flex-col" >
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </fieldset>
+</div>
 {% endblock %}

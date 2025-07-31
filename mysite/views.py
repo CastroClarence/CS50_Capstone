@@ -38,8 +38,25 @@ class UserLoginView(LoginView):
     template_name = 'pages/login.html'
     next_page = reverse_lazy('index')
 
+class ServiceView(ListView):
+    model = Service
+    template_name = 'portfolio/service.html'
+
+    def get_queryset(self):
+        self.owner = get_object_or_404(User, username=self.kwargs['username'])
+        return Service.objects.filter(user = self.owner)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['service_form'] = ServiceCreateForm
+        context['owner'] = self.owner
+        context['is_owner'] = self.request.user == self.owner
+        return context
+
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ServiceListView(ListView):
+    # Shows all users' Services
     model = Service
     template_name = 'pages/service.html'
 
@@ -109,6 +126,23 @@ class PortfolioView(DetailView):
         context['portfolio_form'] = PortfolioForm
         return context
     
+class PortfolioCreateView(CreateView):
+    model = Portfolio
+    template_name = 'portfolio/portfolio_create.html'
+    form_class = PortfolioForm
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'portfolio', kwargs={
+                'username' : self.request.user
+            }
+        )
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+    
+    
 class PortfolioUpdateView(UpdateView):
     model = Portfolio
     form_class = PortfolioForm
@@ -124,8 +158,13 @@ class ProjectListView(ListView):
     template_name = 'portfolio/project.html'
 
     def get_queryset(self):
+        service = Service.objects.get(id = self.kwargs['pk'])
         self.owner = get_object_or_404(User, username=self.kwargs['username'])
-        return Project.objects.filter(user = self.owner)
+        projects = Project.objects.filter(user = self.owner, service = service)
+        if projects:
+            return projects
+        else:
+            return None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -140,7 +179,7 @@ class ProjectCreateView(CreateView):
     
     def get_success_url(self):
         username = self.request.user.username
-        return reverse_lazy('project', kwargs={
+        return reverse_lazy('service_user', kwargs={
             'username' : username
         })
     
@@ -171,17 +210,26 @@ class SocialFormView(FormView):
     template_name = 'portfolio/social_form.html'
     form_class = SocialForm
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.save()
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy(
-            'portfolio', kwargs={
+            'social', kwargs={
                 'username' : self.request.user.username
             })
     
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['owner'] = self.request.user
+        return context
+
     
 class SocialCreateView(CreateView):
+    # This is for on the modal of the social page
+    # For users who already have first existing social
     form_class = SocialForm
     model = Social
 
