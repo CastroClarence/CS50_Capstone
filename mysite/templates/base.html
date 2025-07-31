@@ -79,8 +79,8 @@
             <div tabindex="0" role="button" class="m-1 btn btn-neutral">Hello, {{ request.user.username }} <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div></div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
                 <li><a onclick="inquiries_list_modal.showModal()">Inquiry <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div> </a></li>
-                <li><a >Bookmark</a></li>
-                <li><a >Support</a></li>
+                <li><a onclick="bookmark_modal.showModal()">Bookmark</a></li>
+                <li><a onclick="support_modal.showModal()">Support</a></li>
                 <li>
                     <form action="{% url 'logout' %}" method="post">
                         {% csrf_token %}
@@ -193,6 +193,60 @@
                     </div>
                 </div>
             </ul>
+        </div>
+    </dialog>
+
+    <dialog id="bookmark_modal" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+
+        <ul class="list bg-base-100">
+        
+            <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Bookmarked Services</li>
+            {% for bookmark in bookmarks %}
+            <li class="list-row">
+                <div>
+                <div>{{ bookmark.service.name }}</div>
+                <div class="text-xs uppercase font-semibold opacity-60">{{ bookmark.service.category }}</div>
+                </div>
+                <div class="flex justify-end">
+                    by:<a class="hover:underline font-bold" href="{% url 'portfolio' bookmark.service.user.username %}"> {{ bookmark.service.user.username }}</a>
+                </div>
+            </li>
+            {% empty %}
+            <li>No bookmarked service yet.</li>
+            {% endfor %}
+        
+        </ul>
+        </div>
+    </dialog>
+
+    <dialog id="support_modal" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+
+        <ul class="list bg-base-100">
+        
+            <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Supported Services</li>
+            {% for support in supports %}
+            <li class="list-row">
+                <div>
+                <div>{{ support.service.name }}</div>
+                <div class="text-xs uppercase font-semibold opacity-60">{{ support.service.category }}</div>
+                </div>
+                <div class="flex justify-end">
+                    by:<a class="hover:underline font-bold" href="{% url 'portfolio' support.service.user.username %}"> {{ support.service.user.username }}</a>
+                </div>
+            </li>
+            {% empty %}
+            <li>No bookmarked service yet.</li>
+            {% endfor %}
+        
+        </ul>
         </div>
     </dialog>
 

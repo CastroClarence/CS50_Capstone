@@ -1,6 +1,6 @@
-from mysite.models import Service, Inquiry
+from mysite.models import Service, Inquiry, Bookmark, Support
 
-def get_unread(request):
+def get_inquiries(request):
     user = request.user
     count = 0
     inquiries_read = Inquiry.objects.filter(service__user=user, read=True)
@@ -19,4 +19,18 @@ def get_unread(request):
         'inquiries_unread' : inquiries_unread,
         'inquiries_read' : inquiries_read,
         'inquiries_sent' : inquiries_sent
+    }
+
+def get_bookmarks(request):
+    user = request.user
+    bookmarks = Bookmark.objects.filter(user = user)
+    return {
+        'bookmarks' : bookmarks
+    }
+
+def get_supports(request):
+    user = request.user
+    supports = Support.objects.filter(user = user)
+    return {
+        'supports' : supports
     }
