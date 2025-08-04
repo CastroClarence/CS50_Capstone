@@ -14,8 +14,8 @@
       class="max-w-sm rounded-lg shadow-2xl"
     />
     <div>
-      <h1 class="text-5xl font-bold">Hi, I am {{ object.user.first_name }}</h1>
-      <p class="py-6">
+      <h1 class="text-5xl font-bold">Hi, I am <span class="text-accent bg-accent-content p-2 rounded-box">{{ object.user.first_name }}</span></h1>
+      <p class="py-6 text-justify">
         {{ object.description }}
       </p>
       <a class="btn btn-primary" href="{% url 'service_user' object.user.username %}">View Services</a>
@@ -50,9 +50,11 @@
     function editForm(image, description){
         const image_preview = document.querySelector('#preview_container')
         const description_input = document.querySelector('#id_description')
+        const image_input = document.querySelector('#id_profile_picture')
         
         image_preview.className.remove;
         image_preview.className = 'block'
+        image_input.removeAttribute('required');
         image_preview.querySelector('#image_preview').src = image
         description_input.value = description
     }

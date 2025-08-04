@@ -38,9 +38,12 @@ class UserLoginView(LoginView):
     template_name = 'pages/login.html'
     next_page = reverse_lazy('index')
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ServiceView(ListView):
+    # Show list of service of a specific user
     model = Service
     template_name = 'portfolio/service.html'
+    paginate_by = 10
 
     def get_queryset(self):
         self.owner = get_object_or_404(User, username=self.kwargs['username'])
@@ -59,6 +62,7 @@ class ServiceListView(ListView):
     # Shows all users' Services
     model = Service
     template_name = 'pages/service.html'
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -110,7 +114,8 @@ class ServiceDeleteView(DeleteView):
         form
         messages.add_message(self.request, messages.SUCCESS, 'Service deleted successfully.')
         return super().form_valid(form)
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PortfolioView(DetailView):
     template_name = 'portfolio/portfolio.html'
     model = Portfolio
@@ -125,7 +130,8 @@ class PortfolioView(DetailView):
         context['owner'] = self.user
         context['portfolio_form'] = PortfolioForm
         return context
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')  
 class PortfolioCreateView(CreateView):
     model = Portfolio
     template_name = 'portfolio/portfolio_create.html'
@@ -142,7 +148,7 @@ class PortfolioCreateView(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
     
-    
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PortfolioUpdateView(UpdateView):
     model = Portfolio
     form_class = PortfolioForm
@@ -152,27 +158,28 @@ class PortfolioUpdateView(UpdateView):
         return reverse_lazy('portfolio', kwargs={
             'username': username
         })
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ProjectListView(ListView):
     model = Project
     template_name = 'portfolio/project.html'
+    paginate_by = 10
 
     def get_queryset(self):
-        service = Service.objects.get(id = self.kwargs['pk'])
+        service = get_object_or_404(Service, id=self.kwargs['pk'])
         self.owner = get_object_or_404(User, username=self.kwargs['username'])
-        projects = Project.objects.filter(user = self.owner, service = service)
-        if projects:
-            return projects
-        else:
-            return None
+        return Project.objects.filter(user=self.owner, service=service)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['project_form'] = ProjectForm
         context['owner'] = self.owner
         context['is_owner'] = self.request.user == self.owner
+        context['service'] = get_object_or_404(Service, id=self.kwargs['pk'])
         return context
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
@@ -186,7 +193,8 @@ class ProjectCreateView(CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
@@ -196,16 +204,17 @@ class ProjectUpdateView(UpdateView):
         return reverse_lazy('project', kwargs={
             'username' : username
         })
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ProjectDeleteView(DeleteView):
     model = Project
 
     def get_success_url(self):
         username = self.request.user.username
-        return reverse_lazy('project', kwargs={
+        return reverse_lazy('service_user', kwargs={
             'username': username
         })
-    
+@method_decorator(login_required(login_url='login'), name='dispatch')  
 class SocialFormView(FormView):
     template_name = 'portfolio/social_form.html'
     form_class = SocialForm
@@ -226,7 +235,7 @@ class SocialFormView(FormView):
         context['owner'] = self.request.user
         return context
 
-    
+@method_decorator(login_required(login_url='login'), name='dispatch') 
 class SocialCreateView(CreateView):
     # This is for on the modal of the social page
     # For users who already have first existing social
@@ -250,7 +259,7 @@ class SocialCreateView(CreateView):
                     'username': self.request.user.username
                 })
             )
-        
+@method_decorator(login_required(login_url='login'), name='dispatch')    
 class SocialListView(ListView):
     model = Social
     template_name = 'portfolio/social.html'
@@ -264,7 +273,8 @@ class SocialListView(ListView):
         context['owner'] = self.owner
         context['social_form'] = SocialForm
         return context
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch') 
 class SocialUpdateView(UpdateView):
     model = Social
     form_class = SocialForm
@@ -274,7 +284,7 @@ class SocialUpdateView(UpdateView):
         return reverse_lazy('social', kwargs={
             'username' : username
         })
-    
+@method_decorator(login_required(login_url='login'), name='dispatch') 
 class SocialDeleteView(DeleteView):
     model = Social
     
@@ -284,6 +294,7 @@ class SocialDeleteView(DeleteView):
             'username' : username
         })
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class InquiryCreateView(CreateView):
     model = Inquiry
     success_url = reverse_lazy('service')
@@ -294,7 +305,8 @@ class InquiryCreateView(CreateView):
         form.instance.user = self.request.user
         form.instance.service = get_object_or_404(Service, pk=service)
         return super().form_valid(form)
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class InquiryUpdateView(UpdateView):
     model = Inquiry
     fields = []
@@ -314,6 +326,7 @@ class InquiryUpdateView(UpdateView):
         return redirect(self.success_url)
     
 @method_decorator(csrf_protect, name='dispatch')
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class BookmarkView(View):
     def post(self, request, *args, **kwargs):
         service = get_object_or_404(Service, id=kwargs['pk'])
@@ -327,7 +340,8 @@ class BookmarkView(View):
             'success': True,
             'status' : bookmark.status
         })
-    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class SupportView(View):
     def post(self, request, **kwargs):
         service = Service.objects.get(id = kwargs['pk'])

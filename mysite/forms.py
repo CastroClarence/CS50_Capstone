@@ -52,7 +52,8 @@ class ServiceCreateForm(forms.ModelForm):
             'class' : 'input'
         })
         self.fields['image'].widget.attrs.update({
-            'class' : 'file-input'
+            'class' : 'file-input',
+            'required' : ''
         })
         self.fields['description'].widget.attrs.update({
             'class': 'textarea'
@@ -66,7 +67,8 @@ class PortfolioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['profile_picture'].widget.attrs.update({
-            'class' : 'file-input'
+            'class' : 'file-input',
+            'required' : 'True'
         })
         self.fields['description'].widget.attrs.update({
             'class' : 'textarea'
@@ -89,7 +91,8 @@ class ProjectForm(forms.ModelForm):
             'class': 'input'
         })
         self.fields['image'].widget.attrs.update({
-            'class': 'file-input'
+            'class': 'file-input',
+            'required' : ''
         })
 
 class SocialForm(forms.ModelForm):

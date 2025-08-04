@@ -5,6 +5,7 @@ from datetime import timedelta
 
 # Create your models here.
 
+
 category_choices = {
     "Web Development": "Web Development",
     "Software Development": "Software Development",

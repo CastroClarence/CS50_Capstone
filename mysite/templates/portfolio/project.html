@@ -1,70 +1,92 @@
 {% extends "base_portfolio.html" %}
+{% block style %}
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+{% endblock %}
 {% block body %}
-<div class="flex flex-col gap-4 px-4">
+<div class="flex flex-col gap-4 p-4 relative flex-1">
     {% if is_owner %}
-    <div class="flex justify-end">
-        <div class="flex gap-2">
-            <button class="btn btn-sm" onclick="project_modal.showModal()">
+        <div class="absolute top-5 right-5 ">
+            <button class="btn btn-sm" onclick="addProject(); project_modal.showModal()" data-url="{% url 'project_create' %}" id="project-create-btn">
                 Add Project
             </button>
         </div>
-    </div>
     {% endif %}
-    <div>
-        <p class="text-5xl font-bold text-accent">Projects</p>
+    <div class="flex flex-col gap-2">
+        <div class="flex flex-row gap-2">
+            <a class="btn" href="{% url 'service_user' owner.username %}"><i class="fi fi-rr-angle-left"></i></a>
+            <p class="text-5xl font-bold text-accent w-3/4">{{ service.name }} Projects</p>
+        </div>
+        <p class="text-sm text-gray-600 mb-2">{{ service.description }}</p>
     </div>
-    <div class="flex gap-4">
-        {% for project in object_list %}
-        <!-- Cards of the Projects -->
-        <div class="card bg-base-100 w-96 h-96 shadow-lg ">
-            <figure class="flex-2 bg-base-200">
-                {% if project.image %}
-                <img
-                class="h-full p-2"
-                src="{{ project.image.url }}"
-                alt="{{ project.name }}" />
-                {% else %}
-                <p> No image provided. </p>
-                {% endif %}
-            </figure>
-            <div class="card-body flex-1 relative">
-                {% if is_owner %}
-                <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer">
-                    <div tabindex="0" role="button" class="cursor-pointer">...</div>
-                    <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
-                        <li><button 
-                            data-update-url="{% url 'project_update' project.id %}"
-                            id="project-btn"
-                            onclick="editForm('{{project.id|escapejs}}', '{{project.name|escapejs}}', '{{project.description|escapejs}}', '{{project.image.url|escapejs}}', '{{project.service.id|escapejs}}'); project_modal.showModal();">Edit</button></li>
-                        <li>
-                            <button form="delete-form-{{ project.id }}" type="submit">
-                                Delete
-                            </button>
-                        </li>
-                        <form id="delete-form-{{ project.id }}" action="{% url 'project_delete' project.id %}" method="post" class="hidden"
-                        onsubmit="return confirm('Are you sure you want to delete project {{ project.name }}?')">
-                            {% csrf_token %}
-                        </form>
-                    </ul>
-                </div>
-                {% endif %}
-                <h2 class="card-title">
-                {{ project.name }}
-                {% if project.is_new %}
-                <div class="badge badge-secondary">NEW</div>
-                {% endif %}
-                </h2>
-                <div class="h-20 break-words max-h-20 overflow-y-auto">
-                    {{ project.description }}
-                </div>
-                <div class="card-actions justify-end">
-                <div class="badge badge-outline">{{ project.service.category }}</div>
+    <div class="flex flex-col flex-1 justify-between">
+        <div class="grid grid-cols-4 gap-4">
+            {% for project in page_obj %}
+            <!-- Cards of the Projects -->
+            <div class="card bg-base-100 h-96 shadow-lg ">
+                <figure class="flex-2 bg-base-200">
+                    {% if project.image %}
+                    <img
+                    class="h-full p-2"
+                    src="{{ project.image.url }}"
+                    alt="{{ project.name }}" />
+                    {% else %}
+                    <p> No image provided. </p>
+                    {% endif %}
+                </figure>
+                <div class="card-body flex-1 relative">
+                    {% if is_owner %}
+                    <div class="dropdown dropdown-bottom dropdown-end top-1 right-3 absolute flex-1 cursor-pointer">
+                        <div tabindex="0" role="button" class="cursor-pointer">...</div>
+                        <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
+                            <li><button 
+                                data-update-url="{% url 'project_update' project.id %}"
+                                id="project-btn"
+                                onclick="editForm('{{project.id|escapejs}}', '{{project.name|escapejs}}', '{{project.description|escapejs}}', '{{project.image.url|escapejs}}', '{{project.service.id|escapejs}}'); project_modal.showModal();">Edit</button></li>
+                            <li>
+                                <button form="delete-form-{{ project.id }}" type="submit">
+                                    Delete
+                                </button>
+                            </li>
+                            <form id="delete-form-{{ project.id }}" action="{% url 'project_delete' project.id %}" method="post" class="hidden"
+                            onsubmit="return confirm('Are you sure you want to delete project {{ project.name }}?')">
+                                {% csrf_token %}
+                            </form>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <h2 class="card-title">
+                    {{ project.name }}
+                    {% if project.is_new %}
+                    <div class="badge badge-secondary">NEW</div>
+                    {% endif %}
+                    </h2>
+                    <div class="h-20 break-words max-h-20 overflow-y-auto">
+                        {{ project.description }}
+                    </div>
+                    <div class="card-actions justify-end">
+                    <div class="badge badge-outline">{{ project.service.category }}</div>
+                    </div>
                 </div>
             </div>
+            {% empty %}
+            No projects yet.
+            {% endfor %}
         </div>
-        {% empty %}
-        No projects yet.
-        {% endfor %}
+        <div class="justify-center flex">
+            <div class="join">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="join-item btn">First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn">«</a>
+                {% endif %}
+                <button class="join-item btn">
+                    {{ page_obj.number }}
+                </button>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="join-item btn">»</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="join-item btn">Last</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -73,7 +95,7 @@
     <!-- Project Form Modal -->
   <div class="modal-box flex justify-center">
     <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="clearForm()">✕</button>
     </form>
     <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 h-3/4">
         <legend class="fieldset-legend text-xl">Project</legend>
@@ -95,6 +117,27 @@
 
 {% block script %}
 <script>
+    function addProject(){
+        const service_input = document.querySelector('#id_service');
+        service_input.value = '{{ service.id }}'
+    }
+
+    function clearForm(){
+        const name_input = document.querySelector('#id_name');
+        const form = document.querySelector('#project_form');
+        const description_input = document.querySelector('#id_description');
+        const service_input = document.querySelector('#id_service');
+        const preview_container = document.querySelector('#preview_container');
+        const project_btn = document.querySelector('#project-create-btn');
+
+        name_input.value = '';
+        description_input.value = '';
+        service_input.value = '';
+        preview_container.classList.remove('block');
+        preview_container.className = 'hidden';
+        form.action = project_btn.dataset.url;
+    }
+
     function editForm(projectId, name, description, imageUrl, serviceId){
 
         // Create and Add the url of Project Edit

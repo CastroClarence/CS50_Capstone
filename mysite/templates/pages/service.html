@@ -8,7 +8,7 @@
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-straight/css/uicons-solid-straight.css'>
 {% endblock %}
 {% block body %}
-<div class="flex flex-col w-full h-full gap-2 p-4">
+<div class="flex flex-col w-full flex-1 gap-2 h-full p-4">
     {% if messages %}
         {% for message in messages %}
         <div role="alert" class="alert alert-{{ message.tags }} alert-soft">
@@ -16,104 +16,129 @@
         </div>
         {% endfor %}
     {% endif %}
-    <div>
+    <div class="flex flex-col gap-2">
         <p class="text-5xl font-bold text-accent">Services</p>
+        <p class="text-sm text-gray-600 mb-2">Click on a service name to view its related projects.</p>
     </div>
-    <div class="flex gap-4">
-    {% for service in object_list %}
-        <!-- Container of Service List -->
-        <div class="card bg-base-100 w-96 h-96 shadow-lg transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105">
-            <figure class="flex-2 bg-base-200">
-                {% if service.image %}
-                <img
-                class="h-full p-2"
-                src="{{ service.image.url }}"
-                alt="{{ service.name }}" />
-                {% else %}
-                <p> No image provided. </p>
-                {% endif %}
-            </figure>
-            <div class="card-body flex-1 rounded-b-box relative">
-            {% if request.user == service.user %}
-                <div class="dropdown dropdown-bottom dropdown-hover dropdown-end top-1 right-3 absolute cursor-pointer">
-                    <div tabindex="0" role="button" class="cursor-pointer">...</div>
-                    <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
-                        <li>
-                            <button 
-                                onclick="service_modal.showModal(); updateForm(
-                                    this,
-                                    '{{ service.id|escapejs }}',
-                                    '{{ service.name|escapejs }}',
-                                    '{{ service.description|escapejs }}',
-                                    '{{ service.image.url|escapejs }}',
-                                    '{{ service.category|escapejs }}'
-                                );"
-                                data-update-url="{% url 'service_update' service.id %}">
-                                Edit
-                            </button>
-                        </li>
-                        <li>
-                            <button form="delete-form-{{ project.id }}" type="submit">
-                                Delete
-                            </button>
-                        </li>
-                        <form id="delete-form-{{ project.id }}"
-                        action="{% url 'service_delete' service.id %}"
-                        method="post" class="hidden"
-                        onsubmit="return confirm('Are you sure you want to delete service {{ service.name }}?')">
-                            {% csrf_token %}
-                        </form>
-                    </ul>
-                </div>
-                {% endif %}
-                <h2 class="card-title text-primary underline cursor-pointer">
-                    <a href="{% url 'project' service.user.username service.id %}">
-                        {{ service.name }}
-                    </a>
-                </h2>
-                <p class="text-xs">
-                    by: 
-                    <span class="underline font-bold">
-                        {{ service.user.username }}
-                    </span>
-                </p>
-                <div class="overflow-y-auto break-words max-h-16 h-16">{{ service.description|escapejs }}</div>
-                <div class="card-actions justify-end">
-                    <div class="badge badge-outline">{{ service.category }}</div>
-                </div>
-                <div class="flex justify-end gap-2">
-                    {% if request.user != service.user %}
-                    <button class="btn btn-primary btn-sm" 
-                    data-update-url="{% url 'inquiry_create' service.id %}"
-                    onclick="inquiry_modal.showModal(); changeAction()"
-                    id="inquiry_button"
-                    >Inquire</button>
-                    <button class="btn btn-sm" onclick="bookmark()">
-                        {% if not service|is_bookmarked:request.user %}
-                        <i class="fi fi-rr-bookmark" id="bookmark-icon" 
-                        data-url="{% url 'bookmark_view' service.id %}">
-                        </i>
-                        {% else %}
-                        <i class="fi fi-sr-bookmark" id="bookmark-icon" 
-                        data-url="{% url 'bookmark_view' service.id %}">
-                        </i>
-                        {% endif %}
-                    </button>
+    <div class="flex justify-between flex-col flex-1">
+        <div class="grid grid-cols-4 gap-4">
+        {% for service in page_obj %}
+            <!-- Container of Service List -->
+            <div class="card bg-base-100  h-96 shadow-lg transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105">
+                <figure class="flex-2 bg-base-200">
+                    {% if service.image %}
+                    <img
+                    class="h-full p-2"
+                    src="{{ service.image.url }}"
+                    alt="{{ service.name }}" />
+                    {% else %}
+                    <p> No image provided. </p>
                     {% endif %}
-                    <button class="btn btn-sm" onclick="support('{{service.id}}')">
-                        {% if not service|is_supported:request.user %}
-                        <i class="fi fi-rs-heart-partner-handshake" id="support-{{service.id}}-icon" data-url="{% url 'support_view' service.id %}"></i>
-                        {% else %}
-                        <i class="fi fi-ss-heart-partner-handshake" id="support-{{service.id}}-icon" data-url="{% url 'support_view' service.id %}"></i>
+                </figure>
+                <div class="card-body flex-1 rounded-b-box relative">
+                {% if request.user == service.user %}
+                    <div class="dropdown dropdown-bottom dropdown-hover dropdown-end top-1 right-3 absolute cursor-pointer">
+                        <div tabindex="0" role="button" class="cursor-pointer">...</div>
+                        <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
+                            <li>
+                                <button 
+                                    onclick="service_modal.showModal(); updateForm(
+                                        this,
+                                        '{{ service.id|escapejs }}',
+                                        '{{ service.name|escapejs }}',
+                                        '{{ service.description|escapejs }}',
+                                        '{{ service.image.url|escapejs }}',
+                                        '{{ service.category|escapejs }}'
+                                    );"
+                                    data-update-url="{% url 'service_update' service.id %}">
+                                    Edit
+                                </button>
+                            </li>
+                            <li>
+                                <button form="delete-form-{{ project.id }}" type="submit">
+                                    Delete
+                                </button>
+                            </li>
+                            <form id="delete-form-{{ project.id }}"
+                            action="{% url 'service_delete' service.id %}"
+                            method="post" class="hidden"
+                            onsubmit="return confirm('Are you sure you want to delete service {{ service.name }}?')">
+                                {% csrf_token %}
+                            </form>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <h2 class="card-title underline cursor-pointer pr-8 line-clamp-2">
+                        <a href="{% url 'project' service.user.username service.id %}">
+                            {{ service.name }}
+                        </a>
+                        {% if service.is_new %}
+                        <div class="badge badge-secondary flex-shrink-0 ml-2">NEW</div>
                         {% endif %}
-                        <i id="support-{{service.id}}-count">{{ service.support_count }}</i>
-                    </button>
+                    </h2>
+                    <p class="text-xs">
+                        by: 
+                        <a class="font-bold underline" href="{% url 'portfolio' request.user.username %}">
+                            {{ service.user.username }}
+                        </a>
+                    </p>
+                    <div class="h-20 break-words max-h-20 overflow-y-auto">
+                        {{ service.description|escapejs }}
+                    </div>
+                    <div class="card-actions justify-end">
+                        <div class="badge badge-outline truncate max-w-full" title="{{ service.category }}">
+                            {{ service.category }}
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        {% if request.user != service.user %}
+                        <button class="btn btn-primary btn-sm" 
+                        data-update-url="{% url 'inquiry_create' service.id %}"
+                        onclick="inquiry_modal.showModal(); changeAction()"
+                        id="inquiry_button"
+                        >Inquire</button>
+                        <button class="btn btn-sm" onclick="bookmark()">
+                            {% if not service|is_bookmarked:request.user %}
+                            <i class="fi fi-rr-bookmark" id="bookmark-icon" 
+                            data-url="{% url 'bookmark_view' service.id %}">
+                            </i>
+                            {% else %}
+                            <i class="fi fi-sr-bookmark" id="bookmark-icon" 
+                            data-url="{% url 'bookmark_view' service.id %}">
+                            </i>
+                            {% endif %}
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-sm" onclick="support('{{service.id}}')">
+                            {% if not service|is_supported:request.user %}
+                            <i class="fi fi-rs-heart-partner-handshake" id="support-{{service.id}}-icon" data-url="{% url 'support_view' service.id %}"></i>
+                            {% else %}
+                            <i class="fi fi-ss-heart-partner-handshake" id="support-{{service.id}}-icon" data-url="{% url 'support_view' service.id %}"></i>
+                            {% endif %}
+                            <i id="support-{{service.id}}-count">{{ service.support_count }}</i>
+                        </button>
+                    </div>
                 </div>
             </div>
+        {% empty %}
+            <p>No services provided yet. </p>
+        {% endfor %}
         </div>
-    {% empty %}
-        <p>No services provided yet. </p>
-    {% endfor %}
+        <div class="justify-center flex">
+            <div class="join">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="join-item btn">First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn">«</a>
+                {% endif %}
+                <button class="join-item btn">
+                    {{ page_obj.number }}
+                </button>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="join-item btn">»</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="join-item btn">Last</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 

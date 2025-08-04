@@ -8,6 +8,8 @@
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-brands/css/uicons-brands.css'>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    {% block style %}
+    {% endblock %}
 </head>
 <body>
     <div class="min-h-screen w-screen flex flex-col">
@@ -49,7 +51,7 @@
             </li> -->
             {% if request.user == owner %}
                 {% if owner.socials.all %}
-                <li><a href="{% url 'social' owner.username %}">Social</a></li>
+                <li><a href="{% url 'social' owner.username %}">Socials</a></li>
                 {% else %}
                 <li><a href="{% url 'social_form' %}">Socials</a></li>
                 {% endif %}

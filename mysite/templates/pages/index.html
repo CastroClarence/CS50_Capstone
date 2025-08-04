@@ -4,11 +4,18 @@
   <div class="hero-content text-center">
     <div class="max-w-md">
       <h1 class="text-5xl font-bold">Welcome to Servfolio</h1>
-      <p class="py-6">
-        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
-        quasi. In deleniti eaque aut repudiandae et a id nisi.
+      <p class="py-6 text-justify">
+        A personal portfolio web application built with Django and JavaScript. It allows users to showcase their services, social links, and achievements through a clean and dynamic web interface. Designed for developers, freelancers, and professionals who want to manage and share their online presence with ease.
       </p>
-      <button class="btn btn-primary">Get Started</button>
+      {% if request.user.is_authenticated %}
+        {% if request.user.portfolio.exists %}
+        <a class="btn btn-primary" href="{% url 'portfolio' request.user.username %}">Get Started</a>
+        {% else %}
+        <a class="btn btn-primary" href="{% url 'portfolio_create' %}">Get Started</a>
+        {% endif %}
+      {% else %}
+      <a class="btn btn-primary" href="{% url 'login' %}">Get Started</a>
+      {% endif %}
     </div>
   </div>
 </div>
