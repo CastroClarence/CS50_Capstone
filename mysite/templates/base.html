@@ -39,8 +39,8 @@
                     <li>
                     <a>About Us</a>
                     <ul class="p-2">
-                        <li><a>Submenu 1</a></li>
-                        <li><a>Submenu 2</a></li>
+                        <li><a>Mission</a></li>
+                        <li><a href="{% url 'portfolio' username='Teng' %}">Developer</a></li>
                     </ul>
                     </li>
                     <li><a href="{% url 'service' %}">Services</a></li>
@@ -64,7 +64,7 @@
                     <summary>About Us</summary>
                     <ul class="p-2">
                         <li><a>Mission</a></li>
-                        <li><a>Developer</a></li>
+                        <li><a href="{% url 'portfolio' username='Teng' %}">Developer</a></li>
                     </ul>
                     </details>
                 </li>
