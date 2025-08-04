@@ -20,15 +20,37 @@
                 <ul
                     tabindex="0"
                     class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                    <li><a>Item 1</a></li>
+                    {% if request.user.is_authenticated %}
+                        <div class="collapse">
+                            <input type="checkbox" />
+                            <div class="collapse-title font-semibold flex flex-row items-center gap-2">
+                                <span>Hello, {{ request.user.username }}</span> <div class=" badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div>
+                            </div>
+                            <div class="collapse-content text-sm">
+                                <ul>
+                                    <li><a onclick="inquiries_list_modal.showModal()">Inquiry <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div> </a></li>
+                                    <li><a onclick="bookmark_modal.showModal()">Bookmark</a></li>
+                                    <li><a onclick="support_modal.showModal()">Support</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <li><a href="{% url 'index' %}">Home</a></li>
                     <li>
-                    <a>Parent</a>
+                    <a>About Us</a>
                     <ul class="p-2">
                         <li><a>Submenu 1</a></li>
                         <li><a>Submenu 2</a></li>
                     </ul>
                     </li>
-                    <li><a>Item 3</a></li>
+                    <li><a href="{% url 'service' %}">Services</a></li>
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.portfolio.exists %}
+                        <li><a href="{% url 'portfolio' request.user.username %}">Portfolio</a></li>
+                        {% else %}
+                        <li><a href="{% url 'portfolio_create' %}">Portfolio</a></li>
+                        {% endif %}
+                    {% endif %}
                 </ul>
                 </div>
                 <a class="btn btn-ghost text-xl" href="{% url 'index' %}">Servfolio</a>
@@ -56,7 +78,7 @@
                 {% endif %}
                 </ul>
             </div>
-            <div class="lg:navbar-end hidden">
+            <div class="navbar-end">
                 <label class="swap swap-rotate">
                 <!-- this hidden checkbox controls the state -->
                 <input type="checkbox" class="theme-controller" value="cupcake" id="theme-toggle"/>
@@ -80,7 +102,7 @@
                 </svg>
                 </label>
                 {% if request.user.is_authenticated %}
-                <div class="dropdown dropdown-bottom dropdown-end dropdown-hover">
+                <div class="dropdown dropdown-bottom dropdown-end dropdown-hover lg:block hidden">
                     <div tabindex="0" role="button" class="m-1 btn btn-neutral">Hello, {{ request.user.username }} <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div></div>
                     <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
                         <li><a onclick="inquiries_list_modal.showModal()">Inquiry <div class="badge badge-sm badge-secondary">{{ inquiry_unread_count }}</div> </a></li>

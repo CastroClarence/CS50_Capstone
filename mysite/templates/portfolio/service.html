@@ -11,11 +11,11 @@
     </div>
     {% endif %}
     <div class="flex flex-col gap-2">
-        <p class="text-5xl font-bold text-accent">Services</p>
+        <p class="lg:text-5xl text-4xl font-bold text-accent">Services</p>
         <p class="text-sm text-gray-600 mb-2">Click on a service name to view its related projects.</p>
     </div>
     <div class="flex flex-col justify-between flex-1">
-        <div class="grid gap-4 grid-cols-4">
+        <div class="lg:grid gap-4 lg:grid-cols-4 flex flex-col">
             {% for service in page_obj %}
             <!-- Cards of the services -->
             <div class="card bg-base-100 h-96 shadow-lg transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 ">

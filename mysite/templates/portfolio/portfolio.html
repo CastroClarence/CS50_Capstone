@@ -1,20 +1,23 @@
 {% extends "base_portfolio.html" %}
 {% block body %}
-<div class="hero bg-base-200 min-h-full max-h-full min-w-full  relative  rounded-box p-[1rem]">
-    {% if owner == request.user %}
-    <div class="absolute top-5 left-5 z-10">
-        <button class="btn-xs btn btn-secondary" onclick="portfolio_modal.showModal(); editForm('{{ object.profile_picture.url }}', '{{ object.description }}')">
-            Edit Details
-        </button>
-    </div>
-    {% endif %}
-  <div class="hero-content min-w-full  flex-row justify-between lg:flex-row-reverse p-0">
+<div class="lg:hero bg-base-200 min-h-full max-h-full min-w-full  relative  rounded-box p-[1rem] flex flex-col ">
+  {% if owner == request.user %}
+  <div class="lg:absolute lg:top-5 lg:left-5 z-10">
+      <button class="btn-xs btn btn-secondary" onclick="portfolio_modal.showModal(); editForm('{{ object.profile_picture.url }}', '{{ object.description }}')">
+          Edit Details
+      </button>
+  </div>
+  {% endif %}
+  <div class="hero-content min-w-full justify-between lg:flex-row-reverse lg:p-0 flex-col">
     <img
       src="{{ object.profile_picture.url }}"
-      class="max-w-sm rounded-lg shadow-2xl"
+      class="lg:max-w-sm w-full rounded-lg shadow-2xl"
     />
     <div>
-      <h1 class="text-5xl font-bold">Hi, I am <span class="text-accent bg-accent-content p-2 rounded-box">{{ object.user.first_name }}</span></h1>
+      <div class="flex flex-col lg:flex-row lg:items-center gap-2 items-start">
+        <span class="text-5xl font-bold ">Hi, I am</span>
+        <span class="text-5xl text-accent bg-accent-content rounded-box wrap-normal p-2">{{ object.user.first_name }}</span>
+      </div>
       <p class="py-6 text-justify">
         {{ object.description }}
       </p>

@@ -9,9 +9,27 @@ from datetime import timedelta
 category_choices = {
     "Web Development": "Web Development",
     "Software Development": "Software Development",
-    "Design and Architecture" : "Design and Architecture",
-    "Graphic Design" : "Graphic Design" 
+    "UI/UX Design": "UI/UX Design",
+    "Graphic Design": "Graphic Design",
+    "Mobile App Development": "Mobile App Development",
+    "Game Development": "Game Development",
+    "Data Analysis": "Data Analysis",
+    "DevOps": "DevOps",
+    "Cloud Solutions": "Cloud Solutions",
+    "AI & Machine Learning": "AI & Machine Learning",
+    "Cybersecurity": "Cybersecurity",
+    "Database Management": "Database Management",
+    "Embedded Systems": "Embedded Systems",
+    "AR/VR Development": "AR/VR Development",
+    "Technical Writing": "Technical Writing",
+    "API Development": "API Development",
+    "E-commerce Solutions": "E-commerce Solutions",
+    "Automation Scripting": "Automation Scripting",
+    "Digital Marketing": "Digital Marketing",
+    "Blockchain Development": "Blockchain Development",
+    "Architecture & Design" : "Architecture & Design",
 }
+
 
 class Service(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='services')
