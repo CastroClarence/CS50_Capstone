@@ -64,26 +64,26 @@ The design is fully mobile-responsive using TailwindCSS, and interface component
 ## ▶️ How to Run the Application
 
 1. **Clone the repository**
-   git clone https://github.com/CastroClarence/CS50_Capstone.git
-   cd servfolio
+   - git clone https://github.com/CastroClarence/CS50_Capstone.git
+   - cd servfolio
 
 2. **Set up a virtual environment**
-    python -m venv venv
-    source venv/bin/activate  # Windows: venv\Scripts\activate
+    - python -m venv venv
+    - source venv/bin/activate  # Windows: venv\Scripts\activate
 
 3. **Install required packages**
-    npm run build:css # to build the css for daisyUI and tailwindCSS
-    pip install -r requirements.txt
+    - npm run build:css # to build the css for daisyUI and tailwindCSS
+    - pip install -r requirements.txt
 
 4. **Apply database migrations**
-    python manage.py makemigrations
-    python manage.py migrate
+    - python manage.py makemigrations
+    - python manage.py migrate
 
 5. **Run the development server**
-    python manage.py runserver
+    - python manage.py runserver
 
 6. **Open in your browser**
-    Visit http://127.0.0.1:8000/servfolio/
+    - Visit http://127.0.0.1:8000/servfolio/
 
 ## 🗒️Additional Notes
 - This project uses Tailwind CSS CLI for utility-first styling and DaisyUI as a Tailwind CSS component plugin for faster and consistent UI development.
@@ -93,5 +93,5 @@ The design is fully mobile-responsive using TailwindCSS, and interface component
 - Tailwind is configured via the tailwind.config.js file, and compiled CSS output is generated in static/css/output.css from the input in static/src/input.css.
 
 - If you modify any TailwindCSS classes or custom CSS, run the following to recompile styles:
-    npm run build:css
+    - npm run build:css
 
