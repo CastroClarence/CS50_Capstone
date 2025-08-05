@@ -1,6 +1,6 @@
 {% extends "base_portfolio.html" %}
 {% block body %}
-<div class="lg:hero bg-base-200 min-h-full max-h-full min-w-full  relative  rounded-box p-[1rem] flex flex-col ">
+<div class="lg:hero bg-base-200 min-h-full max-h-full min-w-full  relative  rounded-box p-[1rem] flex flex-col flex-1">
   {% if owner == request.user %}
   <div class="lg:absolute lg:top-5 lg:left-5 z-10">
       <button class="btn-xs btn btn-secondary" onclick="portfolio_modal.showModal(); editForm('{{ object.profile_picture.url }}', '{{ object.description }}')">
@@ -8,7 +8,7 @@
       </button>
   </div>
   {% endif %}
-  <div class="hero-content min-w-full justify-between lg:flex-row-reverse lg:p-0 flex-col">
+  <div class="hero-content min-w-full justify-between lg:flex-row-reverse lg:p-0 flex-col flex-1">
     <img
       src="{{ object.profile_picture.url }}"
       class="lg:max-w-sm w-full rounded-lg shadow-2xl"

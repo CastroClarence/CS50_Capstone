@@ -37,7 +37,7 @@
                 <div class="card-body flex-1 rounded-b-box relative">
                 {% if request.user == service.user %}
                     <div class="dropdown dropdown-bottom dropdown-hover dropdown-end top-1 right-3 absolute cursor-pointer">
-                        <div tabindex="0" role="button" class="cursor-pointer">...</div>
+                        <div tabindex="0" role="button" class="cursor-pointer p-2">...</div>
                         <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
                             <li>
                                 <button 
@@ -89,6 +89,7 @@
                             {{ service.category }}
                         </div>
                     </div>
+                    {% if request.user.is_authenticated %}
                     <div class="flex justify-end gap-2">
                         {% if request.user != service.user %}
                         <button class="btn btn-primary btn-sm" 
@@ -117,6 +118,7 @@
                             <i id="support-{{service.id}}-count">{{ service.support_count }}</i>
                         </button>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         {% empty %}

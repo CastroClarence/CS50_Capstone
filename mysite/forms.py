@@ -24,7 +24,9 @@ class RegisterForm(UserCreationForm):
             'class': 'input'
         })
         self.fields["password2"].widget.attrs.update({
-            'class': 'input'
+            'class': 'input',
+            'writingSuggestions' : 'false',
+            'autocomplete': 'off'
         })
 
 class CustomLoginForm(AuthenticationForm):
@@ -80,7 +82,11 @@ class ProjectForm(forms.ModelForm):
         fields = ['name', 'description', 'service', 'image']
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        # Filter service choices based on user
+        if user:
+            self.fields['service'].queryset = Service.objects.filter(user=user)
         self.fields['name'].widget.attrs.update({
             'class': 'input'
         })

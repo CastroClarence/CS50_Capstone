@@ -38,7 +38,6 @@ class UserLoginView(LoginView):
     template_name = 'pages/login.html'
     next_page = reverse_lazy('index')
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
 class ServiceView(ListView):
     # Show list of service of a specific user
     model = Service
@@ -57,7 +56,6 @@ class ServiceView(ListView):
         return context
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
 class ServiceListView(ListView):
     # Shows all users' Services
     model = Service
@@ -69,7 +67,8 @@ class ServiceListView(ListView):
         user = self.request.user
         context['service_form'] = ServiceCreateForm()
         context['inquiry_form'] = InquiryForm()
-        context['service_bookmarked'] = list(Bookmark.objects.filter(user = self.request.user).values_list('service_id', flat=True))
+        if user.is_authenticated:
+            context['service_bookmarked'] = list(Bookmark.objects.filter(user = self.request.user).values_list('service_id', flat=True))
         return context
     
 
@@ -124,7 +123,6 @@ class ServiceDeleteView(DeleteView):
         messages.add_message(self.request, messages.SUCCESS, 'Service deleted successfully.')
         return super().form_valid(form)
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
 class PortfolioView(DetailView):
     template_name = 'portfolio/portfolio.html'
     model = Portfolio
@@ -184,12 +182,12 @@ class ProjectListView(ListView):
     def get_queryset(self):
         service = get_object_or_404(Service, id=self.kwargs['pk'])
         self.owner = get_object_or_404(User, username=self.kwargs['username'])
-        return Project.objects.filter(user=self.owner, service=service)
+        return Project.objects.filter(service__user=self.owner, service=service)
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['project_form'] = ProjectForm
+        context['project_form'] = ProjectForm(user=self.request.user)
         context['owner'] = self.owner
         context['is_owner'] = self.request.user == self.owner
         context['service'] = get_object_or_404(Service, id=self.kwargs['pk'])

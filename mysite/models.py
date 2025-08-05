@@ -46,7 +46,6 @@ class Service(models.Model):
     
     
 class Project(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='projects')
     name = models.CharField(max_length=255)
     description = models.TextField()

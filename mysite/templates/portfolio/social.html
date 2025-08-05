@@ -16,8 +16,8 @@
             {% for social in object_list %}
             <div class="relative">
                 {% if request.user == social.user %}
-                <div class="dropdown dropdown-bottom  absolute top-2 right-0 dropdown-hover z-10">
-                    <div tabindex="0" role="button">
+                <div class="dropdown dropdown-bottom  absolute top-1 right-0 dropdown-hover z-10">
+                    <div tabindex="0" role="button" class="p-1">
                         <i class="fi fi-br-menu-dots-vertical text-neutral-content text-xs hover:text-primary"></i>
                     </div>
                     <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow-sm">
