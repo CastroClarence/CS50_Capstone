@@ -120,9 +120,18 @@
             {% endif %}
         </div>
         </div>
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col relative">
             {% block body %}
             {% endblock %}
+            {% if messages %}
+            <div class="toast toast-start">
+                {% for message in messages %}
+                <div role="alert" class="alert alert-{{ message.tags }}">
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -293,6 +302,9 @@
     {% block script %}
     {% endblock %}
     <script>
+        setTimeout(() => {
+            document.querySelector('.alert').remove()
+        }, 3000)
         const themeToggles = document.querySelectorAll('.theme-controller');
 
         themeToggles.forEach(toggle => {

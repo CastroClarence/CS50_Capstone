@@ -80,12 +80,14 @@ class ServiceCreateView(CreateView):
     template_name = 'pages/service.html'
 
     def get_success_url(self):
-        return reverse_lazy('service')
+        return reverse_lazy('service_user', kwargs ={
+            'username' : self.request.user.username
+        })
 
     def form_valid(self, form):
         print("FORM IS VALID", form.cleaned_data)
         form.instance.user = self.request.user
-        messages.add_message(self.request, messages.SUCCESS, 'Successfully created service.')
+        messages.add_message(self.request, messages.SUCCESS, 'Service created successfully.')
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -98,17 +100,24 @@ class ServiceEditView(UpdateView):
     form_class = ServiceCreateForm
 
     def get_success_url(self):
-        return reverse_lazy('service')
+        return reverse_lazy('service_user', kwargs ={
+            'username' : self.request.user.username
+        })
     
     def form_valid(self, form):
         if not form.cleaned_data.get('image') and self.object.image:
             form.instance.image = self.object.image
+        messages.add_message(self.request, messages.SUCCESS, 'Service updated successfully' )
         return super().form_valid(form)
     
 @method_decorator(login_required(login_url='login'), name= 'dispatch')
 class ServiceDeleteView(DeleteView):
     model = Service
-    success_url = reverse_lazy('service')
+
+    def get_success_url(self):
+        return reverse_lazy('service_user', kwargs={
+            'username' : self.request.user.username
+        })
 
     def form_valid(self, form):
         form
@@ -146,6 +155,7 @@ class PortfolioCreateView(CreateView):
     
     def form_valid(self, form):
         form.instance.user = self.request.user
+        messages.add_message(self.request, messages.SUCCESS, 'Portfolio created successfully.')
         return super().form_valid(form)
     
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -158,6 +168,12 @@ class PortfolioUpdateView(UpdateView):
         return reverse_lazy('portfolio', kwargs={
             'username': username
         })
+    
+    def form_valid(self, form):
+        form
+        messages.add_message(self.request, messages.SUCCESS, 'Portfolio updated successfully.')
+        return super().form_valid(form)
+    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ProjectListView(ListView):
@@ -185,13 +201,16 @@ class ProjectCreateView(CreateView):
     form_class = ProjectForm
     
     def get_success_url(self):
+        service_pk = self.object.service.pk
         username = self.request.user.username
-        return reverse_lazy('service_user', kwargs={
-            'username' : username
+        return reverse_lazy('project', kwargs={
+            'username' : username,
+            'pk' : service_pk
         })
     
     def form_valid(self, form):
         form.instance.user = self.request.user
+        messages.add_message(self.request, messages.SUCCESS, 'Project created successfully.')
         return super().form_valid(form)
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -200,20 +219,35 @@ class ProjectUpdateView(UpdateView):
     form_class = ProjectForm
 
     def get_success_url(self):
+        service_pk = self.object.service.pk
         username = self.request.user.username
         return reverse_lazy('project', kwargs={
-            'username' : username
+            'username' : username,
+            'pk' : service_pk
         })
+    
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Project updated successfully.')
+        return super().form_valid(form)
+    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ProjectDeleteView(DeleteView):
     model = Project
 
     def get_success_url(self):
+        service_pk = self.object.service.pk
         username = self.request.user.username
-        return reverse_lazy('service_user', kwargs={
-            'username': username
+        return reverse_lazy('project', kwargs={
+            'username' : username,
+            'pk' : service_pk
         })
+    
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Project deleted successfully.')
+        return super().form_valid(form)
+    
+    
 @method_decorator(login_required(login_url='login'), name='dispatch')  
 class SocialFormView(FormView):
     template_name = 'portfolio/social_form.html'
@@ -250,15 +284,15 @@ class SocialCreateView(CreateView):
             })
     
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        try:
-            return super().form_valid(form)
-        except IntegrityError:
-            return HttpResponseRedirect(
-                reverse('social', kwargs={
-                    'username': self.request.user.username
-                })
-            )
+        if Social.objects.filter(user = self.request.user, name = form.instance.name).exists():
+            messages.add_message(self.request, messages.ERROR, 'Social was not added due to an integrity error.')
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            form.instance.user = self.request.user
+            response = super().form_valid(form)
+            messages.add_message(self.request, messages.SUCCESS, 'Social added successfully.')
+            return response
+
 @method_decorator(login_required(login_url='login'), name='dispatch')    
 class SocialListView(ListView):
     model = Social
@@ -274,16 +308,36 @@ class SocialListView(ListView):
         context['social_form'] = SocialForm
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch') 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class SocialUpdateView(UpdateView):
     model = Social
     form_class = SocialForm
 
     def get_success_url(self):
-        username = self.request.user.username
-        return reverse_lazy('social', kwargs={
-            'username' : username
-        })
+        return reverse_lazy('social', kwargs={'username': self.request.user.username})
+
+    def get_success_url(self):
+        return reverse_lazy('social', kwargs={'username': self.request.user.username})
+
+    def form_valid(self, form):
+        existing_social = Social.objects.filter(
+            user=self.request.user, 
+            name=form.cleaned_data['name']
+        ).exclude(id=self.object.id)
+
+        if existing_social.exists():
+            messages.add_message(
+                self.request, 
+                messages.ERROR, 
+                f'You already have a {form.cleaned_data["name"]} social account.'
+            )
+            return HttpResponseRedirect(self.get_success_url())
+        
+        response = super().form_valid(form)
+        messages.success(self.request, f'{self.object.name} updated successfully.')
+        return response
+
+    
 @method_decorator(login_required(login_url='login'), name='dispatch') 
 class SocialDeleteView(DeleteView):
     model = Social
@@ -293,6 +347,12 @@ class SocialDeleteView(DeleteView):
         return reverse_lazy('social', kwargs={
             'username' : username
         })
+    
+    def form_valid(self, form):
+        form
+        messages.add_message(self.request, messages.SUCCESS, f'{self.object.name} deleted successfully.')
+        return super().form_valid(form)
+    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class InquiryCreateView(CreateView):

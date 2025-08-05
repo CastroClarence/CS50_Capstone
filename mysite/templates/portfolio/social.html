@@ -2,15 +2,6 @@
 {% load static %}
 {% block body %}
 <div class="flex-1 flex flex-col gap-4 relative">
-    {% if messages %}
-    <div class="space-y-2 my-4">
-        {% for message in messages %}
-        <div class="p-2 border rounded {{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
     {% if request.user == owner %}
     <div class="absolute top-5 right-5 ">
         <button class="btn btn-sm" onclick="create_form_container.showModal()">
@@ -31,7 +22,11 @@
                     </div>
                     <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow-sm">
                         <li>
-                            <a onclick="editForm('{{social.name}}', '{{social.url}}'); create_form_container.showModal(); " data-url="{% url 'social_update' social.id %}" id="editButton">Edit</a>
+                            <a 
+                            onclick="editForm('{{social.name}}', '{{social.url}}', '{% url 'social_update' social.id %}'); create_form_container.showModal();">
+                                Edit
+                            </a>
+
                         </li>
                         <li>
                             <button type="submit" form="social_delete_{{social.id}}">Delete</button>
@@ -85,23 +80,26 @@
 
 {% block script %}
 <script>
-    function editForm(name, url){
+    function editForm(name, url, form_url) {
         const name_input = document.querySelector('#id_name');
         const url_input = document.querySelector('#id_url');
-        const form_url = document.querySelector('#editButton').dataset.url;
         const form = document.querySelector('#social_form');
 
+        // name_input.classList.add('hidden');
+        // label.classList.add('hidden');
+            
         name_input.value = name ?? '';
         url_input.value = url ?? '';
         form.action = form_url;
-
     }
+
     function closeForm(){
         const name_input = document.querySelector('#id_name');
         const url_input = document.querySelector('#id_url');
         const form_url = document.querySelector('#create_btn').dataset.url;
         const form = document.querySelector('#social_form');
 
+        name_input.classList.remove('hidden');
         name_input.value =  '';
         url_input.value =  '';
         form.action = form_url;

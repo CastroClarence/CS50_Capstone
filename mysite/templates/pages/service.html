@@ -77,7 +77,7 @@
                     </h2>
                     <p class="text-xs">
                         by: 
-                        <a class="font-bold underline" href="{% url 'portfolio' request.user.username %}">
+                        <a class="font-bold underline" href="{% url 'portfolio' service.user.username %}">
                             {{ service.user.username }}
                         </a>
                     </p>
@@ -142,25 +142,6 @@
 </div>
 
 <!-- Modals -->
-<dialog id="service_modal" class="modal">
-  <div class="modal-box flex justify-center">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
-    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 h-3/4">
-        <legend class="fieldset-legend text-xl">Service</legend>
-            <form action="{% url 'service_create' %}" method="post" id="service_form" class="flex flex-col gap-2" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ service_form.as_p }}
-                <div class="hidden" id="preview_container">
-                    <img src="" id="image_preview" alt="image preview">
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Submit</button>
-            </form>
-    </fieldset>
-    </div>
-</dialog>
-
 <dialog id="inquiry_modal" class="modal">
   <div class="modal-box flex justify-center">
     <form method="dialog">
@@ -276,11 +257,6 @@
             })
         }
     }
-
-    setTimeout(() => {
-        // Removes all alert in 3sec
-        document.querySelector('.alert').remove()
-    }, 3000)
 
     function changeAction(){
         const action = document.querySelector('#inquiry_button').dataset.updateUrl;

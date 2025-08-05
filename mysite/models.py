@@ -81,8 +81,8 @@ class Social(models.Model):
     name = models.CharField(max_length=255, choices=choices)
     url = models.URLField()
 
-    class Meta:
-        unique_together = ('user', 'name')
+    def __str__(self):
+        return f'{self.user.username}\'s {self.name}'
 
 class Inquiry(models.Model):
     status = {

@@ -148,7 +148,10 @@
         const preview_container = document.querySelector('#preview_container');
         const project_btn = document.querySelector('#project-btn');
 
+        const image_input = document.querySelector('#id_image');
 
+        image_input.removeAttribute('required')
+        
         name_input.value = name;
         description_input.value = description;
         service_input.value = serviceId;
